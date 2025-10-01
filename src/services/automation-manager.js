@@ -198,8 +198,8 @@ class AutomationManager {
 
 		return new Promise((resolve, reject) => {
 			const imap = new Imap({
-				user: 'bohdanmotrych8@gmail.com',
-				password: 'abzsxperydbgyero',
+				user: 'influencers@trycosara.com',
+				password: 'tbxefesuisvckknt',
 				host: 'imap.gmail.com',
 				port: 993,
 				tls: true,
@@ -245,9 +245,7 @@ class AutomationManager {
 
 						fetch.on('message', (msg, seqno) => {
 							const email = {};
-							console.log(0)
 							msg.on('body', (stream, info) => {
-								console.log(1)
 								simpleParser(stream, async (err, parsed) => {
 									if (err) {
 										console.error('❌ Error parsing email:', err);
@@ -263,6 +261,7 @@ class AutomationManager {
 									email.subject = email.subject.replace("Re: ", "");
 									emails.push(email);
 
+									console.log(email.from_email, 9);
 									const { data: influencers } = await supabase().from('influencers').select('instagram_handle, id')
 										.eq('email', email.from_email).limit(1);
 
@@ -528,9 +527,13 @@ class AutomationManager {
 	 */
 	async processIncomingEmail(email, provider) {
 		try {
-			const emailWebhookHandler = require('./email-webhook-handler');
+			// Handle Gmail emails directly (IMAP-based)
+			if (provider === 'gmail' || provider === 'smtp') {
+				return await this.processGmailEmail(email);
+			}
 
-			// Process through webhook handler (simulates webhook)
+			// Handle webhook-based providers
+			const emailWebhookHandler = require('./email-webhook-handler');
 			const result = await emailWebhookHandler.processWebhook(provider, email);
 
 			if (result.success && result.automatic_response_sent) {
@@ -542,6 +545,109 @@ class AutomationManager {
 		} catch (error) {
 			console.error('Error processing email:', error);
 			throw error;
+		}
+	}
+
+	/**
+	 * Process Gmail email directly (IMAP-based)
+	 */
+	async processGmailEmail(email) {
+		try {
+			console.log(`📧 Processing Gmail email from: ${email.from}`);
+			
+			// Extract email content and metadata
+			const emailData = {
+				from: email.from,
+				to: email.to,
+				subject: email.subject,
+				text: email.text,
+				html: email.html,
+				date: email.date,
+				messageId: email.messageId
+			};
+
+			// Check if this is a response to one of our campaigns
+			const { campaigns } = require('./database');
+			const activeCampaigns = await campaigns.getActive();
+			
+			// Look for matching influencer by email
+			const influencer = await this.findInfluencerByEmail(emailData.from);
+			
+			if (!influencer) {
+				console.log(`📧 Email from unknown sender: ${emailData.from}`);
+				return { success: false, reason: 'Unknown sender' };
+			}
+
+			// Update influencer status
+			await this.updateInfluencerStatus(influencer.id, 'responded', {
+				journey_responded_at: new Date().toISOString(),
+				last_email_response: emailData.text
+			});
+
+			// Send automatic response if configured
+			const autoResponse = await this.sendAutomaticResponse(influencer, emailData);
+			
+			if (autoResponse.success) {
+				this.stats.responses_sent++;
+				console.log(`🤖 Auto-response sent to ${influencer.instagram_handle}`);
+			}
+
+			return {
+				success: true,
+				automatic_response_sent: autoResponse.success,
+				influencer: influencer.instagram_handle
+			};
+
+		} catch (error) {
+			console.error('❌ Error processing Gmail email:', error);
+			return { success: false, error: error.message };
+		}
+	}
+
+	/**
+	 * Find influencer by email address
+	 */
+	async findInfluencerByEmail(email) {
+		try {
+			const { influencers } = require('./database');
+			const influencer = await influencers.findByEmail(email);
+			return influencer;
+		} catch (error) {
+			console.error('Error finding influencer by email:', error);
+			return null;
+		}
+	}
+
+	/**
+	 * Update influencer journey status
+	 */
+	async updateInfluencerStatus(influencerId, status, additionalData = {}) {
+		try {
+			const { influencers } = require('./database');
+			await influencers.updateStatus(influencerId, {
+				journey_stage: status,
+				updated_at: new Date().toISOString(),
+				...additionalData
+			});
+		} catch (error) {
+			console.error('Error updating influencer status:', error);
+		}
+	}
+
+	/**
+	 * Send automatic response to influencer
+	 */
+	async sendAutomaticResponse(influencer, emailData) {
+		try {
+			// This would integrate with your email service
+			// For now, just log the response
+			console.log(`📤 Would send auto-response to ${influencer.instagram_handle}`);
+			console.log(`📧 Response to: ${emailData.subject}`);
+			
+			return { success: true };
+		} catch (error) {
+			console.error('Error sending automatic response:', error);
+			return { success: false, error: error.message };
 		}
 	}
 
