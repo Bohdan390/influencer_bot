@@ -723,10 +723,15 @@ class ApifyService {
 
 				// Update progress if discovery ID provided
 				if (discoveryId) {
+					// Get current accumulated count and add new emails
+					const discovery = websocketService.getDiscovery(discoveryId);
+					const currentEmailsFound = discovery ? discovery.emailsFound : 0;
+					const newEmailsFound = currentEmailsFound + uniqueEmails.length;
+					
 					websocketService.updateProgress(discoveryId, {
 						currentStep: `✅ Found ${uniqueEmails.length} email(s) from ${cleanUrl}`,
 						stage: 'url_scraping_complete',
-						emailsFound: uniqueEmails.length,
+						emailsFound: newEmailsFound,
 						emails: uniqueEmails
 					});
 				}
@@ -735,10 +740,14 @@ class ApifyService {
 
 				// Update progress if discovery ID provided
 				if (discoveryId) {
+					// Get current accumulated count (don't reset to 0)
+					const discovery = websocketService.getDiscovery(discoveryId);
+					const currentEmailsFound = discovery ? discovery.emailsFound : 0;
+					
 					websocketService.updateProgress(discoveryId, {
 						currentStep: `❌ No emails found on ${cleanUrl}`,
 						stage: 'url_scraping_complete',
-						emailsFound: 0
+						emailsFound: currentEmailsFound
 					});
 				}
 			}
@@ -1308,6 +1317,10 @@ class ApifyService {
 
 			console.log(`✅ Optimized two-stage discovery complete: ${enrichedInfluencers.length} influencers with accurate data`);
 
+			// Get the accumulated count from WebSocket service
+			const discovery = websocketService.getDiscovery(currentDiscoveryId);
+			const accumulatedEmailsFound = discovery ? discovery.emailsFound : enrichedInfluencers.filter(inf => inf.email).length;
+
 			// Complete the discovery
 			websocketService.completeDiscovery(currentDiscoveryId, {
 				influencers: enrichedInfluencers,
@@ -1317,7 +1330,7 @@ class ApifyService {
 					initialCandidates: initialInfluencers.length,
 					enrichedInfluencers: enrichedInfluencers.length,
 					batchesProcessed: batches.length,
-					emailsFound: enrichedInfluencers.filter(inf => inf.email).length
+					emailsFound: accumulatedEmailsFound
 				}
 			});
 
