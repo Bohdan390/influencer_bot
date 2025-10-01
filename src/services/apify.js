@@ -701,33 +701,12 @@ class ApifyService {
 				executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
 				headless: true,
 				args: [
-					'--no-sandbox', // Required for Digital Ocean App Platform
+					'--no-sandbox',
 					'--disable-setuid-sandbox',
-					'--disable-dev-shm-usage', // Use /tmp instead of /dev/shm
+					'--disable-dev-shm-usage',
 					'--disable-gpu',
 					'--no-zygote',
-					'--single-process', // Important for App Platform
-					'--disable-web-security',
-					'--disable-features=VizDisplayCompositor',
-					'--disable-background-timer-throttling',
-					'--disable-backgrounding-occluded-windows',
-					'--disable-renderer-backgrounding',
-					'--disable-field-trial-config',
-					'--disable-ipc-flooding-protection',
-					'--disable-touch-emulation', // Prevent touch emulation errors
-					'--memory-pressure-off', // Disable memory pressure handling
-					'--max_old_space_size=512', // Limit memory usage to 512MB
-					'--disable-background-networking', // Reduce background processes
-					'--disable-default-apps', // Disable default apps
-					'--disable-sync', // Disable sync
-					'--disable-translate', // Disable translate
-					'--hide-scrollbars', // Hide scrollbars
-					'--mute-audio', // Mute audio
-					'--no-first-run', // Skip first run
-					'--disable-logging', // Disable logging
-					'--disable-permissions-api', // Disable permissions API
-					'--disable-notifications', // Disable notifications
-					'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+					'--single-process'
 				],
 				ignoreDefaultArgs: ['--enable-automation'],
 				ignoreHTTPSErrors: true,
