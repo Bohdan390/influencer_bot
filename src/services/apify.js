@@ -512,18 +512,34 @@ class ApifyService {
 				return [];
 			}
 
-			// Check if Puppeteer is available and Chrome can be launched
-			const puppeteerAvailable = await this.checkPuppeteerAvailability();
-			if (!puppeteerAvailable) {
-				console.log(`⚠️ Puppeteer/Chrome not available, skipping web scraping for ${url}`);
-				return [];
-			}
+		// Check if Puppeteer is available and Chrome can be launched
+		const puppeteerAvailable = await this.checkPuppeteerAvailability();
+		if (!puppeteerAvailable) {
+			console.log(`⚠️ Puppeteer/Chrome not available, skipping web scraping for ${url}`);
+			return [];
+		}
 
-			// Clean and validate URL
-			let cleanUrl = url.trim();
-			if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-				cleanUrl = 'https://' + cleanUrl;
-			}
+		// Clean and validate URL
+		let cleanUrl = url.trim();
+		if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+			cleanUrl = 'https://' + cleanUrl;
+		}
+
+		// Skip known problematic URLs that cause frame detachment
+		const problematicUrls = [
+			'groupon.fr',
+			'groupon.com',
+			'facebook.com',
+			'instagram.com',
+			'twitter.com',
+			'linkedin.com'
+		];
+		
+		const isProblematicUrl = problematicUrls.some(domain => cleanUrl.includes(domain));
+		if (isProblematicUrl) {
+			console.log(`⚠️ Skipping ${cleanUrl} - known to cause frame detachment issues`);
+			return [];
+		}
 
 			console.log(`🔗 Scraping external URL with Puppeteer: ${cleanUrl}`);
 
@@ -641,28 +657,53 @@ class ApifyService {
 				});
 			}
 
-			// Navigate to the page with timeout and error handling
-			try {
-				await page.goto(cleanUrl, {
-					waitUntil: 'domcontentloaded',
-					timeout: 30000
-				});
-			} catch (navigationError) {
-				console.log(`⚠️ Navigation error, trying with load event: ${navigationError.message}`);
-				// Try with a different wait condition
-				await page.goto(cleanUrl, {
-					waitUntil: 'load',
-					timeout: 20000
-				});
-			}
+			// Navigate to the page with enhanced stability checks
+			let navigationSuccess = false;
+			let retryCount = 0;
+			const maxRetries = 2;
 
-			// Wait a bit for any dynamic content to load (reduced timeout to prevent frame issues)
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			while (!navigationSuccess && retryCount < maxRetries) {
+				try {
+					console.log(`🌐 Navigation attempt ${retryCount + 1}/${maxRetries} for: ${cleanUrl}`);
+					
+					await page.goto(cleanUrl, {
+						waitUntil: 'domcontentloaded',
+						timeout: 30000
+					});
 
-			// Check if page loaded successfully
-			const currentUrl = page.url();
-			if (!currentUrl || currentUrl === 'about:blank') {
-				throw new Error('Page failed to load properly');
+					// Wait for page to stabilize
+					await new Promise(resolve => setTimeout(resolve, 2000));
+
+					// Check if page is still valid and loaded
+					if (page.isClosed()) {
+						throw new Error('Page was closed during navigation');
+					}
+
+					const currentUrl = page.url();
+					if (!currentUrl || currentUrl === 'about:blank') {
+						throw new Error('Page failed to load properly');
+					}
+
+					// Additional stability check - try to access a basic property
+					try {
+						await page.evaluate(() => document.readyState);
+						navigationSuccess = true;
+						console.log(`✅ Navigation successful to: ${currentUrl}`);
+					} catch (evalError) {
+						throw new Error(`Page evaluation failed: ${evalError.message}`);
+					}
+
+				} catch (navigationError) {
+					retryCount++;
+					console.log(`⚠️ Navigation attempt ${retryCount} failed: ${navigationError.message}`);
+					
+					if (retryCount < maxRetries) {
+						console.log(`🔄 Retrying navigation in 2 seconds...`);
+						await new Promise(resolve => setTimeout(resolve, 2000));
+					} else {
+						throw new Error(`Navigation failed after ${maxRetries} attempts: ${navigationError.message}`);
+					}
+				}
 			}
 
 			// Update progress
@@ -871,15 +912,29 @@ class ApifyService {
 			return uniqueEmails;
 
 		} catch (error) {
-			console.error(`❌ Error scraping URL ${url} with Puppeteer:`, error.message);
+			// Check if it's a frame detachment error
+			if (error.message.includes('detached Frame') || error.message.includes('Execution context was destroyed')) {
+				console.log(`⚠️ Frame detachment error for ${url} - skipping web scraping`);
+				
+				// Update progress if discovery ID provided
+				if (discoveryId) {
+					websocketService.updateProgress(discoveryId, {
+						currentStep: `⚠️ Skipped ${url} - frame detachment issue`,
+						stage: 'url_scraping_skipped',
+						reason: 'Frame detachment error'
+					});
+				}
+			} else {
+				console.error(`❌ Error scraping URL ${url} with Puppeteer:`, error.message);
 
-			// Update progress if discovery ID provided
-			if (discoveryId) {
-				websocketService.updateProgress(discoveryId, {
-					currentStep: `❌ Error scraping URL: ${error.message}`,
-					stage: 'url_scraping_error',
-					error: error.message
-				});
+				// Update progress if discovery ID provided
+				if (discoveryId) {
+					websocketService.updateProgress(discoveryId, {
+						currentStep: `❌ Error scraping URL: ${error.message}`,
+						stage: 'url_scraping_error',
+						error: error.message
+					});
+				}
 			}
 
 			return [];
