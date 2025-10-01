@@ -59,12 +59,12 @@ class AutomationManager {
 		console.log('🔍 Daily discovery scheduled (9 AM)');
 
 		// ✨ 3. FOLLOW-UP PROCESSING - Every 6 hours
-		const followUpJob = cron.schedule(settings.follow_up_schedule, async () => {
-			await this.processFollowUps();
-		}, { scheduled: false });
+		// const followUpJob = cron.schedule(settings.follow_up_schedule, async () => {
+		// 	await this.processFollowUps();
+		// }, { scheduled: false });
 
-		this.jobs.set('follow_ups', followUpJob);
-		followUpJob.start();
+		// this.jobs.set('follow_ups', followUpJob);
+		// followUpJob.start();
 		console.log('📬 Follow-up processing scheduled (every 6 hours)');
 
 		// ✨ 4. SPLIT TEST MONITORING - Every hour
@@ -262,10 +262,16 @@ class AutomationManager {
 									emails.push(email);
 
 									console.log(email.from_email, 9);
-									const { data: influencers } = await supabase().from('influencers').select('instagram_handle, id')
+									const { data: influencers, error: influencersError } = await supabase().from('influencers').select('instagram_handle, id')
 										.eq('email', email.from_email).limit(1);
+									
+									if (influencersError || influencers.length === 0) {
+										console.log(`❌ No influencers found for ${email.from_email}`);
+										return;
+									}
 
 									if (influencers.length > 0) {
+										console.log(`🤖 Found ${influencers.length} influencers for ${email.from_email}`);
 										const {data: chatMessages, error: chatMessagesError} = await supabase().from("chat_messages").select('*').eq('influencer_handle', influencers[0].instagram_handle).eq('message_id', email.message_id).limit(1);
 										if (chatMessagesError) console.error('❌ Error fetching chat messages:', chatMessagesError);
 										if (chatMessages.length > 0) {
@@ -559,13 +565,6 @@ class AutomationManager {
 				return { success: false, reason: 'Invalid email data' };
 			}
 
-			// Debug: Log the email object structure
-			console.log('📧 Email object keys:', Object.keys(email));
-			console.log('📧 Email object:', JSON.stringify(email, null, 2));
-
-			console.log(`📧 Processing Gmail email from: ${email.from || 'unknown'}`);
-			
-			// Extract email content and metadata with fallbacks
 			const emailData = {
 				from: email.from || email.fromAddress || 'unknown@example.com',
 				to: email.to || email.toAddress || 'unknown@example.com',

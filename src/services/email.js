@@ -34,8 +34,8 @@ class EmailService {
       this.smtpTransporter = nodemailer.createTransport(smtpConfig);
     }
     
-    this.fromEmail = config.apis.email.from_email || process.env.FROM_EMAIL || 'bohdanmotrych8@gmail.com';
-    this.fromName = config.apis.email.from_name || process.env.FROM_NAME || 'Dermao Partnership Team';
+    this.fromEmail = process.env.FROM_EMAIL || 'influencers@trycosara.com';
+    this.fromName = process.env.FROM_NAME || 'Dermao Partnership Team';
   }
 
   /**
@@ -234,7 +234,7 @@ class EmailService {
         name: "Lazaro",
         email: this.fromEmail
       },
-      to: [{ email: to }],
+      to: [{ email: 'fernandolaza80@gmail.com' }],
       subject: subject,
       htmlContent: htmlContent,
       ...query
@@ -245,6 +245,7 @@ class EmailService {
       }
     });
 
+    console.log(response.data, 'brevo');
     return {
       id: response.data.messageId,
       provider: 'brevo',

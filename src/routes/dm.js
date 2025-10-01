@@ -104,7 +104,6 @@ async function sendDM(influencer, dmType, message, subject, firstSend, message_i
       const { influencers } = require('../services/database');
       await influencers.update(influencer.id, {
         status: dmType === 'email' ? 'reached_out' : 'dm_sent',
-        last_message: message.substring(0, 200) // Store first 200 chars
       });
     } catch (dbError) {
       console.warn('⚠️ Could not update influencer status in database:', dbError.message);

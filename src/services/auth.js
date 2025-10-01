@@ -534,7 +534,7 @@ class AuthService {
       },
       email_settings: {
         sender_name: 'Dermao Team',
-        sender_email: 'fernandolaza80@gmail.com',
+        sender_email: 'influencers@trycosara.com',
         reply_to: 'hello@dermao.com',
         signature: 'Best regards,\nThe Dermao Team\n\n--\nDermao IPL Hair Removal\nwww.dermao.com'
       },

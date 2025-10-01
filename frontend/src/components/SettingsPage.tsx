@@ -38,7 +38,7 @@ const SettingsPage = () => {
 
   const [emailSettings, setEmailSettings] = useState({
     sender_name: 'Dermao Team',
-          sender_email: 'fernandolaza80@gmail.com',
+          sender_email: 'influencers@trycosara.com',
     reply_to: 'hello@dermao.com',
     signature: 'Best regards,\nThe Dermao Team\n\n--\nDermao IPL Hair Removal\nwww.dermao.com'
   });
@@ -456,7 +456,7 @@ const SettingsPage = () => {
                 <Label htmlFor="sender_email">Sender Email</Label>
                 <Input 
                   id="sender_email" 
-                  placeholder="fernandolaza80@gmail.com"
+                  placeholder="influencers@trycosara.com"
                   value={emailSettings.sender_email}
                   onChange={(e) => setEmailSettings(prev => ({ ...prev, sender_email: e.target.value }))}
                 />

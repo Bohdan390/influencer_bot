@@ -88,8 +88,7 @@ const hardcodedConfig = {
       max_follow_ups: 2,
       auto_ship_threshold: 0.8,
       sender_name: 'Dermao Partnership Team',
-      sender_email: 'bohdanmotrych8@gmail.com',
-      reply_to: 'fernandolaza80@gmail.com',
+      sender_email: 'influencers@trycosara.com',
       signature: 'Best regards,\nDermao Partnership Team\nBeauty Technology Innovation\n\n--\nDermao IPL Hair Removal\nwww.dermao.com | @dermao.official'
     }
   },
