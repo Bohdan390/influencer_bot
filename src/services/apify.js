@@ -482,25 +482,6 @@ class ApifyService {
 	}
 
 	/**
-	 * Check if Puppeteer and Chrome are available
-	 */
-	async checkPuppeteerAvailability() {
-		try {
-			// Try to launch a minimal Puppeteer instance to test availability
-			const testBrowser = await puppeteer.launch({
-				headless: 'new',
-				args: ['--no-sandbox', '--disable-setuid-sandbox'],
-				timeout: 10000
-			});
-			await testBrowser.close();
-			return true;
-		} catch (error) {
-			console.log(`⚠️ Puppeteer/Chrome not available: ${error.message}`);
-			return false;
-		}
-	}
-
-	/**
 	 * Extract email from external URL using Puppeteer for better anti-detection
 	 */
 	async extractEmailFromExternalUrl(url, discoveryId = null) {
@@ -512,34 +493,11 @@ class ApifyService {
 				return [];
 			}
 
-		// Check if Puppeteer is available and Chrome can be launched
-		const puppeteerAvailable = await this.checkPuppeteerAvailability();
-		if (!puppeteerAvailable) {
-			console.log(`⚠️ Puppeteer/Chrome not available, skipping web scraping for ${url}`);
-			return [];
-		}
-
-		// Clean and validate URL
-		let cleanUrl = url.trim();
-		if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-			cleanUrl = 'https://' + cleanUrl;
-		}
-
-		// Skip known problematic URLs that cause frame detachment
-		const problematicUrls = [
-			'groupon.fr',
-			'groupon.com',
-			'facebook.com',
-			'instagram.com',
-			'twitter.com',
-			'linkedin.com'
-		];
-		
-		const isProblematicUrl = problematicUrls.some(domain => cleanUrl.includes(domain));
-		if (isProblematicUrl) {
-			console.log(`⚠️ Skipping ${cleanUrl} - known to cause frame detachment issues`);
-			return [];
-		}
+			// Clean and validate URL
+			let cleanUrl = url.trim();
+			if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+				cleanUrl = 'https://' + cleanUrl;
+			}
 
 			console.log(`🔗 Scraping external URL with Puppeteer: ${cleanUrl}`);
 
@@ -553,7 +511,7 @@ class ApifyService {
 			}
 
 			// Launch Puppeteer browser with stealth settings
-			const puppeteerOptions = {
+			browser = await puppeteer.launch({
 				headless: 'new', // Use new headless mode
 				args: [
 					'--no-sandbox',
@@ -570,48 +528,11 @@ class ApifyService {
 					'--disable-renderer-backgrounding',
 					'--disable-field-trial-config',
 					'--disable-ipc-flooding-protection',
-					'--single-process', // Important for Digital Ocean
-					'--no-zygote', // Important for Digital Ocean
 					'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 				],
 				ignoreDefaultArgs: ['--enable-automation'],
-				ignoreHTTPSErrors: true,
-				timeout: 60000 // Increase timeout for Digital Ocean
-			};
-
-			// Try to find Chrome executable in common locations
-			const possiblePaths = [
-				process.env.PUPPETEER_EXECUTABLE_PATH,
-				'/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome',
-				'/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome-linux64/chrome',
-				'/usr/bin/google-chrome',
-				'/usr/bin/chromium-browser',
-				'/usr/bin/chromium'
-			];
-
-			// Find the first existing Chrome executable
-			for (const path of possiblePaths) {
-				if (path && require('fs').existsSync(path)) {
-					puppeteerOptions.executablePath = path;
-					console.log(`🔍 Found Chrome at: ${path}`);
-					break;
-				}
-			}
-
-			// If no Chrome found, try to install it dynamically
-			if (!puppeteerOptions.executablePath) {
-				console.log('🔧 Chrome not found, attempting to install...');
-				try {
-					const { execSync } = require('child_process');
-					execSync('npx puppeteer browsers install chrome', { stdio: 'inherit' });
-					console.log('✅ Chrome installed successfully');
-				} catch (installError) {
-					console.log('⚠️ Failed to install Chrome:', installError.message);
-					// Continue without Chrome - will fall back to text extraction only
-				}
-			}
-
-			browser = await puppeteer.launch(puppeteerOptions);
+				ignoreHTTPSErrors: true
+			});
 
 			const page = await browser.newPage();
 
@@ -657,53 +578,28 @@ class ApifyService {
 				});
 			}
 
-			// Navigate to the page with enhanced stability checks
-			let navigationSuccess = false;
-			let retryCount = 0;
-			const maxRetries = 2;
+			// Navigate to the page with timeout and error handling
+			try {
+				await page.goto(cleanUrl, {
+					waitUntil: 'domcontentloaded',
+					timeout: 30000
+				});
+			} catch (navigationError) {
+				console.log(`⚠️ Navigation error, trying with load event: ${navigationError.message}`);
+				// Try with a different wait condition
+				await page.goto(cleanUrl, {
+					waitUntil: 'load',
+					timeout: 20000
+				});
+			}
 
-			while (!navigationSuccess && retryCount < maxRetries) {
-				try {
-					console.log(`🌐 Navigation attempt ${retryCount + 1}/${maxRetries} for: ${cleanUrl}`);
-					
-					await page.goto(cleanUrl, {
-						waitUntil: 'domcontentloaded',
-						timeout: 30000
-					});
+			// Wait a bit for any dynamic content to load
+			await new Promise(resolve => setTimeout(resolve, 2000));
 
-					// Wait for page to stabilize
-					await new Promise(resolve => setTimeout(resolve, 2000));
-
-					// Check if page is still valid and loaded
-					if (page.isClosed()) {
-						throw new Error('Page was closed during navigation');
-					}
-
-					const currentUrl = page.url();
-					if (!currentUrl || currentUrl === 'about:blank') {
-						throw new Error('Page failed to load properly');
-					}
-
-					// Additional stability check - try to access a basic property
-					try {
-						await page.evaluate(() => document.readyState);
-						navigationSuccess = true;
-						console.log(`✅ Navigation successful to: ${currentUrl}`);
-					} catch (evalError) {
-						throw new Error(`Page evaluation failed: ${evalError.message}`);
-					}
-
-				} catch (navigationError) {
-					retryCount++;
-					console.log(`⚠️ Navigation attempt ${retryCount} failed: ${navigationError.message}`);
-					
-					if (retryCount < maxRetries) {
-						console.log(`🔄 Retrying navigation in 2 seconds...`);
-						await new Promise(resolve => setTimeout(resolve, 2000));
-					} else {
-						throw new Error(`Navigation failed after ${maxRetries} attempts: ${navigationError.message}`);
-					}
-				}
+			// Check if page loaded successfully
+			const currentUrl = page.url();
+			if (!currentUrl || currentUrl === 'about:blank') {
+				throw new Error('Page failed to load properly');
 			}
 
 			// Update progress
@@ -715,56 +611,48 @@ class ApifyService {
 				});
 			}
 
-			// Extract all text content and emails with frame safety checks
+			// Extract all text content and emails
 			let pageData;
 			try {
-				// Check if page is still valid before evaluation
-				if (page.isClosed()) {
-					throw new Error('Page was closed before content extraction');
-				}
+				pageData = await page.evaluate(() => {
+					// Get all text content
+					const textContent = document.body ? (document.body.innerText || document.body.textContent || '') : '';
 
-				// Add timeout to page evaluation to prevent hanging
-				pageData = await Promise.race([
-					page.evaluate(() => {
-						try {
-						// Get all text content
-						const textContent = document.body ? (document.body.innerText || document.body.textContent || '') : '';
+					// Get all HTML content for more thorough email extraction
+					const htmlContent = document.documentElement ? document.documentElement.outerHTML || '' : '';
 
-						// Get all HTML content for more thorough email extraction
-						const htmlContent = document.documentElement ? document.documentElement.outerHTML || '' : '';
-
-						// Find all mailto links
-						const mailtoLinks = [];
-						try {
-							const mailtoElements = document.querySelectorAll('a[href^="mailto:"]');
-							mailtoElements.forEach(link => {
-								const href = link.getAttribute('href');
-								if (href) {
-									const email = href.replace('mailto:', '').split('?')[0].trim();
-									if (email) {
-										mailtoLinks.push(email);
-									}
-								}
-							});
-						} catch (e) {
-							console.log('Error extracting mailto links:', e);
-						}
-
-						// Find elements with data attributes that might contain emails
-						const dataEmails = [];
-						try {
-							const dataElements = document.querySelectorAll('[data-email], [data-contact], [data-mail]');
-							dataElements.forEach(element => {
-								const email = element.getAttribute('data-email') ||
-									element.getAttribute('data-contact') ||
-									element.getAttribute('data-mail');
+					// Find all mailto links
+					const mailtoLinks = [];
+					try {
+						const mailtoElements = document.querySelectorAll('a[href^="mailto:"]');
+						mailtoElements.forEach(link => {
+							const href = link.getAttribute('href');
+							if (href) {
+								const email = href.replace('mailto:', '').split('?')[0].trim();
 								if (email) {
-									dataEmails.push(email);
+									mailtoLinks.push(email);
 								}
-							});
-						} catch (e) {
-							console.log('Error extracting data emails:', e);
-						}
+							}
+						});
+					} catch (e) {
+						console.log('Error extracting mailto links:', e);
+					}
+
+					// Find elements with data attributes that might contain emails
+					const dataEmails = [];
+					try {
+						const dataElements = document.querySelectorAll('[data-email], [data-contact], [data-mail]');
+						dataElements.forEach(element => {
+							const email = element.getAttribute('data-email') ||
+								element.getAttribute('data-contact') ||
+								element.getAttribute('data-mail');
+							if (email) {
+								dataEmails.push(email);
+							}
+						});
+					} catch (e) {
+						console.log('Error extracting data emails:', e);
+					}
 
 					// Get text from contact-related elements
 					const contactTexts = [];
@@ -794,69 +682,24 @@ class ApifyService {
 						console.log('Error extracting contact texts:', e);
 					}
 
-							return {
-								textContent,
-								htmlContent,
-								mailtoLinks,
-								dataEmails,
-								contactTexts: contactTexts.join(' ')
-							};
-						} catch (error) {
-							console.log('Error in page evaluation:', error);
-							return {
-								textContent: '',
-								htmlContent: '',
-								mailtoLinks: [],
-								dataEmails: [],
-								contactTexts: ''
-							};
-						}
-					}),
-					new Promise((_, reject) => 
-						setTimeout(() => reject(new Error('Page evaluation timeout')), 15000)
-					)
-				]);
+					return {
+						textContent,
+						htmlContent,
+						mailtoLinks,
+						dataEmails,
+						contactTexts: contactTexts.join(' ')
+					};
+				});
 			} catch (evaluateError) {
 				console.log(`⚠️ Error evaluating page content: ${evaluateError.message}`);
-				
-				// Check if it's a frame detachment error
-				if (evaluateError.message.includes('detached Frame') || evaluateError.message.includes('Execution context was destroyed')) {
-					console.log('🔄 Frame detachment detected, attempting to recover...');
-					
-					// Try to get basic content without evaluation
-					try {
-						if (!page.isClosed()) {
-							const basicContent = await page.content().catch(() => '');
-							pageData = {
-								textContent: basicContent,
-								htmlContent: basicContent,
-								mailtoLinks: [],
-								dataEmails: [],
-								contactTexts: ''
-							};
-						} else {
-							throw new Error('Page is closed');
-						}
-					} catch (recoveryError) {
-						console.log(`⚠️ Recovery failed: ${recoveryError.message}`);
-						pageData = {
-							textContent: '',
-							htmlContent: '',
-							mailtoLinks: [],
-							dataEmails: [],
-							contactTexts: ''
-						};
-					}
-				} else {
-					// Fallback to basic text extraction for other errors
-					pageData = {
-						textContent: '',
-						htmlContent: '',
-						mailtoLinks: [],
-						dataEmails: [],
-						contactTexts: ''
-					};
-				}
+				// Fallback to basic text extraction
+				pageData = {
+					textContent: '',
+					htmlContent: '',
+					mailtoLinks: [],
+					dataEmails: [],
+					contactTexts: ''
+				};
 			}
 
 			// Combine all text sources
@@ -912,48 +755,25 @@ class ApifyService {
 			return uniqueEmails;
 
 		} catch (error) {
-			// Check if it's a frame detachment error
-			if (error.message.includes('detached Frame') || error.message.includes('Execution context was destroyed')) {
-				console.log(`⚠️ Frame detachment error for ${url} - skipping web scraping`);
-				
-				// Update progress if discovery ID provided
-				if (discoveryId) {
-					websocketService.updateProgress(discoveryId, {
-						currentStep: `⚠️ Skipped ${url} - frame detachment issue`,
-						stage: 'url_scraping_skipped',
-						reason: 'Frame detachment error'
-					});
-				}
-			} else {
-				console.error(`❌ Error scraping URL ${url} with Puppeteer:`, error.message);
+			console.error(`❌ Error scraping URL ${url} with Puppeteer:`, error.message);
 
-				// Update progress if discovery ID provided
-				if (discoveryId) {
-					websocketService.updateProgress(discoveryId, {
-						currentStep: `❌ Error scraping URL: ${error.message}`,
-						stage: 'url_scraping_error',
-						error: error.message
-					});
-				}
+			// Update progress if discovery ID provided
+			if (discoveryId) {
+				websocketService.updateProgress(discoveryId, {
+					currentStep: `❌ Error scraping URL: ${error.message}`,
+					stage: 'url_scraping_error',
+					error: error.message
+				});
 			}
 
 			return [];
 		} finally {
-			// Always close the browser with enhanced error handling
+			// Always close the browser
 			if (browser) {
 				try {
-					// Check if browser is still connected before closing
-					if (browser.isConnected()) {
-						await browser.close();
-					}
+					await browser.close();
 				} catch (closeError) {
 					console.log(`⚠️ Error closing browser: ${closeError.message}`);
-					// Force kill if normal close fails
-					try {
-						await browser.disconnect();
-					} catch (disconnectError) {
-						console.log(`⚠️ Error disconnecting browser: ${disconnectError.message}`);
-					}
 				}
 			}
 		}
@@ -1583,10 +1403,6 @@ class ApifyService {
 					console.log(`📧 Scraped emails found: ${scrapedEmails.length}`);
 				} catch (error) {
 					console.log(`⚠️ Error scraping URL: ${error.message}`);
-					// If Puppeteer fails, continue without scraping - this is not critical
-					if (error.message.includes('Chrome') || error.message.includes('puppeteer')) {
-						console.log(`⚠️ Puppeteer/Chrome not available, skipping web scraping for ${externalUrl}`);
-					}
 				}
 			}
 		}
@@ -1596,7 +1412,13 @@ class ApifyService {
 
 		if (uniqueEmails.length > 0) {
 			console.log(`✅ Found ${uniqueEmails.length} email(s) from profile data: ${uniqueEmails.join(', ')}`);
-			return uniqueEmails[0]; // Return the first valid email
+			var validMail = ''
+			uniqueEmails.forEach((email, i) => {
+				if (this.isValidEmail(email)) {
+					validMail += email + (i < uniqueEmails.length - 1 ? ', ' : '')
+				}
+			})
+			return validMail; // Return the first valid email
 		}
 
 		console.log(`❌ No valid emails found in profile data`);
