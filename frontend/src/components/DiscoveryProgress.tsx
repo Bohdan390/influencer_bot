@@ -53,7 +53,8 @@ export const DiscoveryProgress: React.FC<DiscoveryProgressProps> = ({
   useEffect(() => {
     // Connect to WebSocket
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-    const wsBase = apiBase.replace(/^http/, 'ws');
+    const cleanApiBase = apiBase.replace(/\/$/, '');
+    const wsBase = cleanApiBase.replace(/^http/, 'ws');
     const wsUrl = `${wsBase}/ws/discovery-progress`;
     addLog(`🔌 Attempting to connect to: ${wsUrl}`);
     wsRef.current = new WebSocket(wsUrl);

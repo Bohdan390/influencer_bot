@@ -64,7 +64,8 @@ export const WebSocketStatus: React.FC = () => {
           <div>Status: {isConnected ? 'Connected' : 'Disconnected'}</div>
           <div>URL: {(() => {
             const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-            const wsBase = apiBase.replace(/^http/, 'ws');
+            const cleanApiBase = apiBase.replace(/\/$/, '');
+            const wsBase = cleanApiBase.replace(/^http/, 'ws');
             return `${wsBase}/ws/discovery-progress`;
           })()}</div>
         </div>

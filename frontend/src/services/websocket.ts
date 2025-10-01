@@ -322,8 +322,10 @@ class WebSocketService {
 // Create singleton instance with environment-based URL
 const getWebSocketUrl = () => {
   const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  // Remove trailing slash from apiBase
+  const cleanApiBase = apiBase.replace(/\/$/, '');
   // Convert http/https to ws/wss
-  const wsBase = apiBase.replace(/^http/, 'ws');
+  const wsBase = cleanApiBase.replace(/^http/, 'ws');
   return `${wsBase}/ws/discovery-progress`;
 };
 
