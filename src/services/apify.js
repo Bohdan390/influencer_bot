@@ -573,9 +573,7 @@ class ApifyService {
 			}
 
 			// Launch Puppeteer browser with App Platform optimized settings
-			const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
-				'/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome' ||
-				'/usr/bin/google-chrome' ||
+			const executablePath = 
 				'/usr/bin/chromium-browser' ||
 				'/usr/bin/chromium';
 			
