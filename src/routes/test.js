@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { testFirestoreConnection, influencers, createDefaultUser } = require('../services/database');
 const supabaseService = require('../services/supabase');
+const apifyService = require('../services/apify');
 
 // Test database (existing Firebase/Firestore test)
 router.get('/database', async (req, res) => {
@@ -124,6 +125,45 @@ router.get('/supabase', async (req, res) => {
         'Ensure Supabase project is active',
         'Check if tables need to be created manually'
       ]
+    });
+  }
+});
+
+// Test web scraping functionality
+router.post('/scraping', async (req, res) => {
+  try {
+    const { url } = req.body;
+    
+    if (!url) {
+      return res.status(400).json({
+        success: false,
+        error: 'URL is required',
+        message: 'Please provide a URL to test scraping'
+      });
+    }
+
+    console.log(`🧪 Testing web scraping for URL: ${url}`);
+    
+    // Test the web scraping
+    const emails = await apifyService.extractEmailFromExternalUrl(url);
+    
+    res.json({
+      success: true,
+      url: url,
+      emails_found: emails.length,
+      emails: emails,
+      message: `Successfully scraped ${emails.length} email(s) from ${url}`,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ Web scraping test failed:', error);
+    
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Web scraping test failed',
+      timestamp: new Date().toISOString()
     });
   }
 });

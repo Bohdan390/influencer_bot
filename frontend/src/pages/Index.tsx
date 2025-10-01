@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Users, Rocket, Instagram, Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingUp, Users, Rocket, Instagram, Check, X, TestTube, Globe } from "lucide-react";
 import DashboardStats from "@/components/DashboardStats";
 import CampaignManager from "@/components/CampaignManager";
 import CampaignLauncher from "@/components/CampaignLauncher";
@@ -19,6 +22,40 @@ const Index = () => {
     totalReplies: 0,
     unreadCampaigns: 0
   });
+  
+  // Test scraping state
+  const [testUrl, setTestUrl] = useState("https://dermao.com");
+  const [testResult, setTestResult] = useState(null);
+  const [isTesting, setIsTesting] = useState(false);
+
+  // Test web scraping function
+  const testWebScraping = async () => {
+    if (!testUrl.trim()) return;
+    
+    setIsTesting(true);
+    setTestResult(null);
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/test/scraping`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: testUrl }),
+      });
+      
+      const data = await response.json();
+      setTestResult(data);
+    } catch (error) {
+      setTestResult({
+        success: false,
+        error: error.message,
+        message: 'Failed to test web scraping'
+      });
+    } finally {
+      setIsTesting(false);
+    }
+  };
 
   const fetchReplyStats = async () => {
     try {
@@ -76,7 +113,7 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[600px] mx-auto">
+          <TabsList className="grid w-full grid-cols-6 lg:w-[700px] mx-auto">
             <TabsTrigger value="launch" className="flex items-center gap-2">
               <Rocket className="w-4 h-4" />
               Launch
@@ -113,6 +150,10 @@ const Index = () => {
               <TrendingUp className="w-4 h-4" />
               Dashboard
             </TabsTrigger>
+            <TabsTrigger value="test" className="flex items-center gap-2">
+              <TestTube className="w-4 h-4" />
+              Test
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="launch" className="space-y-6">
@@ -133,6 +174,88 @@ const Index = () => {
 
           <TabsContent value="dashboard" className="space-y-6">
             <DashboardStats />
+          </TabsContent>
+
+          <TabsContent value="test" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TestTube className="w-5 h-5" />
+                  Web Scraping Test
+                </CardTitle>
+                <CardDescription>
+                  Test the web scraping functionality on Digital Ocean
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    type="url"
+                    placeholder="Enter URL to test (e.g., https://dermao.com)"
+                    value={testUrl}
+                    onChange={(e) => setTestUrl(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={testWebScraping} 
+                    disabled={isTesting || !testUrl.trim()}
+                    className="flex items-center gap-2"
+                  >
+                    <Globe className="w-4 h-4" />
+                    {isTesting ? "Testing..." : "Test Scraping"}
+                  </Button>
+                </div>
+
+                {testResult && (
+                  <Card className={testResult.success ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        {testResult.success ? (
+                          <Check className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <X className="w-5 h-5 text-red-600" />
+                        )}
+                        <span className={`font-medium ${testResult.success ? "text-green-800" : "text-red-800"}`}>
+                          {testResult.success ? "Success" : "Failed"}
+                        </span>
+                      </div>
+                      
+                      <p className="text-sm text-gray-700 mb-3">
+                        {testResult.message}
+                      </p>
+
+                      {testResult.success && testResult.emails && (
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 mb-2">
+                            Emails Found: {testResult.emails_found}
+                          </p>
+                          <div className="space-y-1">
+                            {testResult.emails.map((email, index) => (
+                              <Badge key={index} variant="secondary" className="mr-2">
+                                {email}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {testResult.error && (
+                        <div className="mt-2">
+                          <p className="text-sm font-medium text-red-700">Error:</p>
+                          <p className="text-sm text-red-600 font-mono bg-red-100 p-2 rounded">
+                            {testResult.error}
+                          </p>
+                        </div>
+                      )}
+
+                      <p className="text-xs text-gray-500 mt-2">
+                        Tested at: {new Date(testResult.timestamp).toLocaleString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>
