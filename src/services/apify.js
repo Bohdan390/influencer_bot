@@ -656,8 +656,8 @@ class ApifyService {
 				});
 			}
 
-			// Wait a bit for any dynamic content to load
-			await new Promise(resolve => setTimeout(resolve, 2000));
+			// Wait a bit for any dynamic content to load (reduced timeout to prevent frame issues)
+			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// Check if page loaded successfully
 			const currentUrl = page.url();
@@ -674,48 +674,56 @@ class ApifyService {
 				});
 			}
 
-			// Extract all text content and emails
+			// Extract all text content and emails with frame safety checks
 			let pageData;
 			try {
-				pageData = await page.evaluate(() => {
-					// Get all text content
-					const textContent = document.body ? (document.body.innerText || document.body.textContent || '') : '';
+				// Check if page is still valid before evaluation
+				if (page.isClosed()) {
+					throw new Error('Page was closed before content extraction');
+				}
 
-					// Get all HTML content for more thorough email extraction
-					const htmlContent = document.documentElement ? document.documentElement.outerHTML || '' : '';
+				// Add timeout to page evaluation to prevent hanging
+				pageData = await Promise.race([
+					page.evaluate(() => {
+						try {
+						// Get all text content
+						const textContent = document.body ? (document.body.innerText || document.body.textContent || '') : '';
 
-					// Find all mailto links
-					const mailtoLinks = [];
-					try {
-						const mailtoElements = document.querySelectorAll('a[href^="mailto:"]');
-						mailtoElements.forEach(link => {
-							const href = link.getAttribute('href');
-							if (href) {
-								const email = href.replace('mailto:', '').split('?')[0].trim();
-								if (email) {
-									mailtoLinks.push(email);
+						// Get all HTML content for more thorough email extraction
+						const htmlContent = document.documentElement ? document.documentElement.outerHTML || '' : '';
+
+						// Find all mailto links
+						const mailtoLinks = [];
+						try {
+							const mailtoElements = document.querySelectorAll('a[href^="mailto:"]');
+							mailtoElements.forEach(link => {
+								const href = link.getAttribute('href');
+								if (href) {
+									const email = href.replace('mailto:', '').split('?')[0].trim();
+									if (email) {
+										mailtoLinks.push(email);
+									}
 								}
-							}
-						});
-					} catch (e) {
-						console.log('Error extracting mailto links:', e);
-					}
+							});
+						} catch (e) {
+							console.log('Error extracting mailto links:', e);
+						}
 
-					// Find elements with data attributes that might contain emails
-					const dataEmails = [];
-					try {
-						const dataElements = document.querySelectorAll('[data-email], [data-contact], [data-mail]');
-						dataElements.forEach(element => {
-							const email = element.getAttribute('data-email') ||
-								element.getAttribute('data-contact') ||
-								element.getAttribute('data-mail');
-							if (email) {
-								dataEmails.push(email);
-							}
-						});
-					} catch (e) {
-						console.log('Error extracting data emails:', e);
-					}
+						// Find elements with data attributes that might contain emails
+						const dataEmails = [];
+						try {
+							const dataElements = document.querySelectorAll('[data-email], [data-contact], [data-mail]');
+							dataElements.forEach(element => {
+								const email = element.getAttribute('data-email') ||
+									element.getAttribute('data-contact') ||
+									element.getAttribute('data-mail');
+								if (email) {
+									dataEmails.push(email);
+								}
+							});
+						} catch (e) {
+							console.log('Error extracting data emails:', e);
+						}
 
 					// Get text from contact-related elements
 					const contactTexts = [];
@@ -745,24 +753,69 @@ class ApifyService {
 						console.log('Error extracting contact texts:', e);
 					}
 
-					return {
-						textContent,
-						htmlContent,
-						mailtoLinks,
-						dataEmails,
-						contactTexts: contactTexts.join(' ')
-					};
-				});
+							return {
+								textContent,
+								htmlContent,
+								mailtoLinks,
+								dataEmails,
+								contactTexts: contactTexts.join(' ')
+							};
+						} catch (error) {
+							console.log('Error in page evaluation:', error);
+							return {
+								textContent: '',
+								htmlContent: '',
+								mailtoLinks: [],
+								dataEmails: [],
+								contactTexts: ''
+							};
+						}
+					}),
+					new Promise((_, reject) => 
+						setTimeout(() => reject(new Error('Page evaluation timeout')), 15000)
+					)
+				]);
 			} catch (evaluateError) {
 				console.log(`⚠️ Error evaluating page content: ${evaluateError.message}`);
-				// Fallback to basic text extraction
-				pageData = {
-					textContent: '',
-					htmlContent: '',
-					mailtoLinks: [],
-					dataEmails: [],
-					contactTexts: ''
-				};
+				
+				// Check if it's a frame detachment error
+				if (evaluateError.message.includes('detached Frame') || evaluateError.message.includes('Execution context was destroyed')) {
+					console.log('🔄 Frame detachment detected, attempting to recover...');
+					
+					// Try to get basic content without evaluation
+					try {
+						if (!page.isClosed()) {
+							const basicContent = await page.content().catch(() => '');
+							pageData = {
+								textContent: basicContent,
+								htmlContent: basicContent,
+								mailtoLinks: [],
+								dataEmails: [],
+								contactTexts: ''
+							};
+						} else {
+							throw new Error('Page is closed');
+						}
+					} catch (recoveryError) {
+						console.log(`⚠️ Recovery failed: ${recoveryError.message}`);
+						pageData = {
+							textContent: '',
+							htmlContent: '',
+							mailtoLinks: [],
+							dataEmails: [],
+							contactTexts: ''
+						};
+					}
+				} else {
+					// Fallback to basic text extraction for other errors
+					pageData = {
+						textContent: '',
+						htmlContent: '',
+						mailtoLinks: [],
+						dataEmails: [],
+						contactTexts: ''
+					};
+				}
 			}
 
 			// Combine all text sources
@@ -831,12 +884,21 @@ class ApifyService {
 
 			return [];
 		} finally {
-			// Always close the browser
+			// Always close the browser with enhanced error handling
 			if (browser) {
 				try {
-					await browser.close();
+					// Check if browser is still connected before closing
+					if (browser.isConnected()) {
+						await browser.close();
+					}
 				} catch (closeError) {
 					console.log(`⚠️ Error closing browser: ${closeError.message}`);
+					// Force kill if normal close fails
+					try {
+						await browser.disconnect();
+					} catch (disconnectError) {
+						console.log(`⚠️ Error disconnecting browser: ${disconnectError.message}`);
+					}
 				}
 			}
 		}
