@@ -7,7 +7,7 @@ services:
     branch: main
   build_command: |
     npm ci
-    npx puppeteer browsers install chrome
+    npx puppeteer browsers install chrome --platform=linux
     cd frontend && npm ci && npm run build
   run_command: node src/app.js
   environment_slug: node-js
@@ -66,6 +66,8 @@ services:
     value: "/workspace/.cache/puppeteer"
   - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
     value: "false"
+  - key: PUPPETEER_EXECUTABLE_PATH
+    value: "/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome"
   http_port: 8080
   routes:
   - path: / 

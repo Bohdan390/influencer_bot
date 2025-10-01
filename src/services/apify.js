@@ -482,6 +482,25 @@ class ApifyService {
 	}
 
 	/**
+	 * Check if Puppeteer and Chrome are available
+	 */
+	async checkPuppeteerAvailability() {
+		try {
+			// Try to launch a minimal Puppeteer instance to test availability
+			const testBrowser = await puppeteer.launch({
+				headless: 'new',
+				args: ['--no-sandbox', '--disable-setuid-sandbox'],
+				timeout: 10000
+			});
+			await testBrowser.close();
+			return true;
+		} catch (error) {
+			console.log(`⚠️ Puppeteer/Chrome not available: ${error.message}`);
+			return false;
+		}
+	}
+
+	/**
 	 * Extract email from external URL using Puppeteer for better anti-detection
 	 */
 	async extractEmailFromExternalUrl(url, discoveryId = null) {
@@ -490,6 +509,13 @@ class ApifyService {
 		try {
 			if (!url || typeof url !== 'string') {
 				console.log(`⚠️ Invalid URL provided: ${url}`);
+				return [];
+			}
+
+			// Check if Puppeteer is available and Chrome can be launched
+			const puppeteerAvailable = await this.checkPuppeteerAvailability();
+			if (!puppeteerAvailable) {
+				console.log(`⚠️ Puppeteer/Chrome not available, skipping web scraping for ${url}`);
 				return [];
 			}
 
@@ -511,9 +537,8 @@ class ApifyService {
 			}
 
 			// Launch Puppeteer browser with stealth settings
-			browser = await puppeteer.launch({
+			const puppeteerOptions = {
 				headless: 'new', // Use new headless mode
-				executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, // Use environment path if available
 				args: [
 					'--no-sandbox',
 					'--disable-setuid-sandbox',
@@ -536,7 +561,41 @@ class ApifyService {
 				ignoreDefaultArgs: ['--enable-automation'],
 				ignoreHTTPSErrors: true,
 				timeout: 60000 // Increase timeout for Digital Ocean
-			});
+			};
+
+			// Try to find Chrome executable in common locations
+			const possiblePaths = [
+				process.env.PUPPETEER_EXECUTABLE_PATH,
+				'/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome',
+				'/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome-linux64/chrome',
+				'/usr/bin/google-chrome',
+				'/usr/bin/chromium-browser',
+				'/usr/bin/chromium'
+			];
+
+			// Find the first existing Chrome executable
+			for (const path of possiblePaths) {
+				if (path && require('fs').existsSync(path)) {
+					puppeteerOptions.executablePath = path;
+					console.log(`🔍 Found Chrome at: ${path}`);
+					break;
+				}
+			}
+
+			// If no Chrome found, try to install it dynamically
+			if (!puppeteerOptions.executablePath) {
+				console.log('🔧 Chrome not found, attempting to install...');
+				try {
+					const { execSync } = require('child_process');
+					execSync('npx puppeteer browsers install chrome', { stdio: 'inherit' });
+					console.log('✅ Chrome installed successfully');
+				} catch (installError) {
+					console.log('⚠️ Failed to install Chrome:', installError.message);
+					// Continue without Chrome - will fall back to text extraction only
+				}
+			}
+
+			browser = await puppeteer.launch(puppeteerOptions);
 
 			const page = await browser.newPage();
 
