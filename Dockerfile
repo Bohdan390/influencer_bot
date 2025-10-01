@@ -1,0 +1,24 @@
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN npm ci
+RUN cd frontend && npm ci && npm run build
+
+FROM node:18-alpine AS final
+
+# --- START ---
+# Install Chromium and certificates for Puppeteer
+RUN apk add --no-cache chromium ca-certificates
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# --- END ---
+
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/frontend/dist ./frontend/dist
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/.env.example .
+
+EXPOSE 8080
+CMD ["npm", "start"]

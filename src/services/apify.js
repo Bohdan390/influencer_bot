@@ -482,6 +482,61 @@ class ApifyService {
 	}
 
 	/**
+	 * Safe evaluate wrapper that handles detached frames with retry logic
+	 */
+	async safeEvaluate(page, fn, maxRetries = 3) {
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				return await page.evaluate(fn);
+			} catch (error) {
+				if (error.message.includes('detached Frame') || 
+					error.message.includes('Execution context was destroyed') ||
+					error.message.includes('Protocol error')) {
+					
+					console.log(`⚠️ Frame detachment on attempt ${attempt}/${maxRetries}, retrying...`);
+					
+					if (attempt < maxRetries) {
+						// Wait a bit before retry
+						await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+						continue;
+					} else {
+						throw new Error(`Frame detachment after ${maxRetries} attempts: ${error.message}`);
+					}
+				} else {
+					throw error;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Check if Puppeteer and Chrome are available
+	 */
+	async checkPuppeteerAvailability() {
+		try {
+			// Try to launch a minimal Puppeteer instance to test availability
+			const testBrowser = await puppeteer.launch({
+				executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+				headless: true,
+				args: [
+					'--no-sandbox',
+					'--disable-setuid-sandbox',
+					'--disable-dev-shm-usage',
+					'--disable-gpu',
+					'--no-zygote',
+					'--single-process'
+				],
+				timeout: 10000
+			});
+			await testBrowser.close();
+			return true;
+		} catch (error) {
+			console.log(`⚠️ Puppeteer/Chrome not available: ${error.message}`);
+			return false;
+		}
+	}
+
+	/**
 	 * Extract email from external URL using Puppeteer for better anti-detection
 	 */
 	async extractEmailFromExternalUrl(url, discoveryId = null) {
@@ -499,6 +554,26 @@ class ApifyService {
 				cleanUrl = 'https://' + cleanUrl;
 			}
 
+			// Check if Puppeteer is available and Chrome can be launched
+			const puppeteerAvailable = await this.checkPuppeteerAvailability();
+			if (!puppeteerAvailable) {
+				console.log(`⚠️ Puppeteer/Chrome not available, trying HTTP request fallback for ${url}`);
+				return await this.extractEmailWithHttpRequest(cleanUrl, discoveryId);
+			}
+
+			// For certain websites that are known to cause frame detachment, use HTTP request directly
+			const problematicWebsites = [
+				'lasersmedaesthetics.com',
+				'groupon.fr',
+				'groupon.com'
+			];
+			
+			const isProblematicWebsite = problematicWebsites.some(domain => cleanUrl.includes(domain));
+			if (isProblematicWebsite) {
+				console.log(`⚠️ Using HTTP request for known problematic website: ${cleanUrl}`);
+				return await this.extractEmailWithHttpRequest(cleanUrl, discoveryId);
+			}
+
 			console.log(`🔗 Scraping external URL with Puppeteer: ${cleanUrl}`);
 
 			// Update progress if discovery ID provided
@@ -510,18 +585,29 @@ class ApifyService {
 				});
 			}
 
-			// Launch Puppeteer browser with stealth settings
+			// Launch Puppeteer browser with Digital Ocean App Platform settings
 			browser = await puppeteer.launch({
-				headless: true, // Use new headless mode
+				executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+				headless: true,
 				args: [
-					'--no-sandbox',
+					'--no-sandbox', // Required for Digital Ocean App Platform
 					'--disable-setuid-sandbox',
 					'--disable-dev-shm-usage',
 					'--disable-gpu',
-					'--no-zygote'
+					'--no-zygote',
+					'--single-process', // Important for App Platform
+					'--disable-web-security',
+					'--disable-features=VizDisplayCompositor',
+					'--disable-background-timer-throttling',
+					'--disable-backgrounding-occluded-windows',
+					'--disable-renderer-backgrounding',
+					'--disable-field-trial-config',
+					'--disable-ipc-flooding-protection',
+					'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 				],
 				ignoreDefaultArgs: ['--enable-automation'],
-				ignoreHTTPSErrors: true
+				ignoreHTTPSErrors: true,
+				timeout: 30000
 			});
 
 			const page = await browser.newPage();
@@ -601,10 +687,10 @@ class ApifyService {
 				});
 			}
 
-			// Extract all text content and emails
+			// Extract all text content and emails using safe evaluate
 			let pageData;
 			try {
-				pageData = await page.evaluate(() => {
+				pageData = await this.safeEvaluate(page, () => {
 					// Get all text content
 					const textContent = document.body ? (document.body.innerText || document.body.textContent || '') : '';
 
