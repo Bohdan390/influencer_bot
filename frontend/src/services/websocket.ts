@@ -319,7 +319,14 @@ class WebSocketService {
   }
 }
 
-// Create singleton instance
-const wsService = new WebSocketService('ws://localhost:3000/ws/discovery-progress');
+// Create singleton instance with environment-based URL
+const getWebSocketUrl = () => {
+  const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  // Convert http/https to ws/wss
+  const wsBase = apiBase.replace(/^http/, 'ws');
+  return `${wsBase}/ws/discovery-progress`;
+};
+
+const wsService = new WebSocketService(getWebSocketUrl());
 
 export default wsService;

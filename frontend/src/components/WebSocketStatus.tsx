@@ -62,7 +62,11 @@ export const WebSocketStatus: React.FC = () => {
       <CardContent className="space-y-4">
         <div className="text-sm text-gray-600">
           <div>Status: {isConnected ? 'Connected' : 'Disconnected'}</div>
-          <div>URL: ws://localhost:3000/ws/discovery-progress</div>
+          <div>URL: {(() => {
+            const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+            const wsBase = apiBase.replace(/^http/, 'ws');
+            return `${wsBase}/ws/discovery-progress`;
+          })()}</div>
         </div>
         
         <div className="flex gap-2">
