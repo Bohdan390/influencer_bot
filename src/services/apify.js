@@ -3,7 +3,7 @@ const { influencers } = require('./database');
 const websocketService = require('./websocket');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 
 // Load hardcoded config to ensure environment variables are set
 const { config } = require('../config/hardcoded-config');
@@ -482,68 +482,6 @@ class ApifyService {
 	}
 
 	/**
-	 * Safe evaluate wrapper that handles detached frames with retry logic
-	 */
-	async safeEvaluate(page, fn, maxRetries = 3) {
-		for (let attempt = 1; attempt <= maxRetries; attempt++) {
-			try {
-				return await page.evaluate(fn);
-			} catch (error) {
-				if (error.message.includes('detached Frame') || 
-					error.message.includes('Execution context was destroyed') ||
-					error.message.includes('Protocol error')) {
-					
-					console.log(`⚠️ Frame detachment on attempt ${attempt}/${maxRetries}, retrying...`);
-					
-					if (attempt < maxRetries) {
-						// Wait a bit before retry
-						await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-						continue;
-					} else {
-						throw new Error(`Frame detachment after ${maxRetries} attempts: ${error.message}`);
-					}
-				} else {
-					throw error;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Check if Puppeteer and Chrome are available
-	 */
-	async checkPuppeteerAvailability() {
-		try {
-			// Try to find Chrome executable
-			const executablePath =
-				'/usr/bin/chromium-browser' ||
-				'/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome' ||
-				'/usr/bin/google-chrome' ||
-				'/usr/bin/chromium';
-			
-			// Try to launch a minimal Puppeteer instance to test availability
-			const testBrowser = await puppeteer.launch({
-				headless: 'new',
-				executablePath: executablePath,
-				args: [
-					'--no-sandbox',
-					'--disable-setuid-sandbox',
-					'--disable-dev-shm-usage',
-					'--disable-gpu',
-					'--single-process',
-					'--no-zygote'
-				],
-				timeout: 10000
-			});
-			await testBrowser.close();
-			return true;
-		} catch (error) {
-			console.log(`⚠️ Puppeteer/Chrome not available: ${error.message}`);
-			return false;
-		}
-	}
-
-	/**
 	 * Extract email from external URL using Puppeteer for better anti-detection
 	 */
 	async extractEmailFromExternalUrl(url, discoveryId = null) {
@@ -572,37 +510,18 @@ class ApifyService {
 				});
 			}
 
-			// Launch Puppeteer browser with App Platform optimized settings
-			const executablePath = 
-				'/usr/bin/chromium-browser' ||
-				'/usr/bin/chromium';
-			
+			// Launch Puppeteer browser with stealth settings
 			browser = await puppeteer.launch({
-				headless: 'new', // Use new headless mode
-				executablePath: executablePath,
+				headless: true, // Use new headless mode
 				args: [
-					'--no-sandbox', // Required for App Platform
+					'--no-sandbox',
 					'--disable-setuid-sandbox',
 					'--disable-dev-shm-usage',
 					'--disable-gpu',
-					'--single-process', // Important for App Platform
-					'--no-zygote', // Important for App Platform
-					'--disable-web-security',
-					'--disable-features=VizDisplayCompositor',
-					'--disable-background-timer-throttling',
-					'--disable-backgrounding-occluded-windows',
-					'--disable-renderer-backgrounding',
-					'--disable-field-trial-config',
-					'--disable-ipc-flooding-protection',
-					'--disable-extensions',
-					'--disable-plugins',
-					'--disable-images',
-					'--disable-javascript', // Disable JS for faster loading
-					'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+					'--no-zygote'
 				],
 				ignoreDefaultArgs: ['--enable-automation'],
-				ignoreHTTPSErrors: true,
-				timeout: 30000
+				ignoreHTTPSErrors: true
 			});
 
 			const page = await browser.newPage();
@@ -682,10 +601,10 @@ class ApifyService {
 				});
 			}
 
-			// Extract all text content and emails using safe evaluate
+			// Extract all text content and emails
 			let pageData;
 			try {
-				pageData = await this.safeEvaluate(page, () => {
+				pageData = await page.evaluate(() => {
 					// Get all text content
 					const textContent = document.body ? (document.body.innerText || document.body.textContent || '') : '';
 
