@@ -1,8 +1,8 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN npm ci
-RUN cd frontend && npm ci && npm run build
+RUN npm install
+RUN cd frontend && npm install && npm run build
 
 FROM node:18-alpine AS final
 
@@ -16,6 +16,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/frontend/dist ./frontend/dist
+COPY --from=builder /app/frontend/node_modules ./frontend/node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json .
 COPY --from=builder /app/.env.example .

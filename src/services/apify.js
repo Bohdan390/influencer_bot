@@ -537,6 +537,117 @@ class ApifyService {
 	}
 
 	/**
+	 * Extract emails using simple HTTP request (fallback method)
+	 */
+	async extractEmailWithHttpRequest(url, discoveryId = null) {
+		try {
+			console.log(`🌐 Using HTTP request fallback for: ${url}`);
+			
+			const https = require('https');
+			const http = require('http');
+			const { URL } = require('url');
+			const zlib = require('zlib');
+			
+			const urlObj = new URL(url);
+			const client = urlObj.protocol === 'https:' ? https : http;
+			
+			const response = await new Promise((resolve, reject) => {
+				const req = client.get(url, {
+					headers: {
+						'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+						'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+						'Accept-Language': 'en-US,en;q=0.5',
+						'Accept-Encoding': 'gzip, deflate',
+						'Connection': 'keep-alive',
+						'Upgrade-Insecure-Requests': '1'
+					},
+					timeout: 15000
+				}, resolve);
+				req.on('error', reject);
+				req.setTimeout(15000, () => reject(new Error('Request timeout')));
+			});
+			
+			let chunks = [];
+			response.on('data', chunk => {
+				chunks.push(chunk);
+			});
+			
+			await new Promise((resolve, reject) => {
+				response.on('end', resolve);
+				response.on('error', reject);
+			});
+			
+			// Handle gzipped content
+			const buffer = Buffer.concat(chunks);
+			let htmlContent = '';
+			
+			// Check if content is gzipped
+			if (response.headers['content-encoding'] === 'gzip') {
+				htmlContent = zlib.gunzipSync(buffer).toString('utf8');
+			} else if (response.headers['content-encoding'] === 'deflate') {
+				htmlContent = zlib.inflateSync(buffer).toString('utf8');
+			} else {
+				htmlContent = buffer.toString('utf8');
+			}
+			
+			// Extract emails from the HTML content
+			const emails = this.extractEmailsFromText(htmlContent);
+			const uniqueEmails = [...new Set(emails)].filter(email => this.isValidEmail(email));
+			
+			if (uniqueEmails.length > 0) {
+				console.log(`✅ Found ${uniqueEmails.length} email(s) via HTTP request: ${uniqueEmails.join(', ')}`);
+				
+				// Update progress if discovery ID provided
+				if (discoveryId) {
+					const websocketService = require('./websocket');
+					const discovery = websocketService.getDiscovery(discoveryId);
+					const currentEmailsFound = discovery ? discovery.emailsFound : 0;
+					const newEmailsFound = currentEmailsFound + uniqueEmails.length;
+					
+					websocketService.updateProgress(discoveryId, {
+						currentStep: `✅ Found ${uniqueEmails.length} email(s) via HTTP request`,
+						stage: 'url_scraping_complete',
+						emailsFound: newEmailsFound,
+						emails: uniqueEmails
+					});
+				}
+			} else {
+				console.log(`❌ No emails found via HTTP request on ${url}`);
+				
+				// Update progress if discovery ID provided
+				if (discoveryId) {
+					const websocketService = require('./websocket');
+					const discovery = websocketService.getDiscovery(discoveryId);
+					const currentEmailsFound = discovery ? discovery.emailsFound : 0;
+					
+					websocketService.updateProgress(discoveryId, {
+						currentStep: `❌ No emails found via HTTP request on ${url}`,
+						stage: 'url_scraping_complete',
+						emailsFound: currentEmailsFound
+					});
+				}
+			}
+			
+			return uniqueEmails;
+			
+		} catch (error) {
+			console.error(`❌ Error with HTTP request for ${url}:`, error.message);
+			
+			// Update progress if discovery ID provided
+			if (discoveryId) {
+				const websocketService = require('./websocket');
+				websocketService.updateProgress(discoveryId, {
+					currentStep: `❌ HTTP request failed: ${error.message}`,
+					stage: 'url_scraping_error',
+					error: error.message
+				});
+			}
+			
+			return [];
+		}
+	}
+
+	/**
 	 * Extract email from external URL using Puppeteer for better anti-detection
 	 */
 	async extractEmailFromExternalUrl(url, discoveryId = null) {
