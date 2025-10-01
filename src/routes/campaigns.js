@@ -474,9 +474,7 @@ router.post('/discover', async (req, res) => {
         const apifyService = require('../services/apify');
         
         // Update progress: Searching hashtags
-        websocketService.updateProgress(discoveryId, {
-          currentStep: `Searching hashtags: ${hashtags.join(', ')}`,
-          completedSteps: 1,
+        websocketService.updateStep(discoveryId, `Searching hashtags: ${hashtags.join(', ')}`, {
           progress: 20
         });
 
@@ -490,17 +488,13 @@ router.post('/discover', async (req, res) => {
         console.log(`📱 Found ${discoveredInfluencers.length} potential influencers`);
         
         // Update progress: Processing results
-        websocketService.updateProgress(discoveryId, {
-          currentStep: `Processing ${discoveredInfluencers.length} discovered influencers...`,
-          completedSteps: 2,
+        websocketService.updateStep(discoveryId, `Processing ${discoveredInfluencers.length} discovered influencers...`, {
           progress: 40,
           influencersFound: discoveredInfluencers.length
         });
         
         // Update progress: Checking duplicates
-        websocketService.updateProgress(discoveryId, {
-          currentStep: 'Checking for duplicate influencers...',
-          completedSteps: 3,
+        websocketService.updateStep(discoveryId, 'Checking for duplicate influencers...', {
           progress: 60
         });
 
@@ -543,9 +537,7 @@ router.post('/discover', async (req, res) => {
         }
 
         // Update progress: Saving to database
-        websocketService.updateProgress(discoveryId, {
-          currentStep: `Saving ${newInfluencers.length} influencers to database...`,
-          completedSteps: 4,
+        websocketService.updateStep(discoveryId, `Saving ${newInfluencers.length} influencers to database...`, {
           progress: 80
         });
 

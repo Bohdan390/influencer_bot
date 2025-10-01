@@ -1058,9 +1058,7 @@ class ApifyService {
 			console.log(`📱 Stage 1 complete: Found ${initialInfluencers.length} initial candidates`);
 
 			// Update progress: Stage 1 complete
-			websocketService.updateProgress(currentDiscoveryId, {
-				currentStep: `Stage 1 complete: Found ${initialInfluencers.length} initial candidates`,
-				completedSteps: 1,
+			websocketService.updateStep(currentDiscoveryId, `Stage 1 complete: Found ${initialInfluencers.length} initial candidates`, {
 				progress: 30,
 				stage: 'hashtag_discovery_complete',
 				candidatesFound: initialInfluencers.length
@@ -1079,9 +1077,7 @@ class ApifyService {
 			console.log(`🔍 Stage 2: Batch enriching ${usernames.length} profiles...`);
 
 			// Update progress: Starting Stage 2
-			websocketService.updateProgress(currentDiscoveryId, {
-				currentStep: `Stage 2: Enriching ${usernames.length} profiles with detailed data...`,
-				completedSteps: 1,
+			websocketService.updateStep(currentDiscoveryId, `Stage 2: Enriching ${usernames.length} profiles with detailed data...`, {
 				progress: 35,
 				stage: 'profile_enrichment',
 				profilesToEnrich: usernames.length
@@ -1100,9 +1096,7 @@ class ApifyService {
 				console.log(`📊 Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} profiles)`);
 
 				// Update progress: Processing batch
-				websocketService.updateProgress(currentDiscoveryId, {
-					currentStep: `Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} profiles)`,
-					completedSteps: 1,
+				websocketService.updateStep(currentDiscoveryId, `Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} profiles)`, {
 					progress: 35 + (batchIndex / batches.length) * 50,
 					stage: 'profile_enrichment',
 					currentBatch: batchIndex + 1,
@@ -1269,9 +1263,7 @@ class ApifyService {
 				}
 
 				// Update progress: Batch complete
-				websocketService.updateProgress(currentDiscoveryId, {
-					currentStep: `Batch ${batchIndex + 1}/${batches.length} complete. Found ${enrichedInfluencers.length} influencers so far.`,
-					completedSteps: 2,
+				websocketService.updateStep(currentDiscoveryId, `Batch ${batchIndex + 1}/${batches.length} complete. Found ${enrichedInfluencers.length} influencers so far.`, {
 					progress: 35 + ((batchIndex + 1) / batches.length) * 50,
 					stage: 'batch_complete',
 					currentBatch: batchIndex + 1,
@@ -1299,18 +1291,14 @@ class ApifyService {
 			}
 
 			// Update progress: Stage 2 complete
-			websocketService.updateProgress(currentDiscoveryId, {
-				currentStep: `Stage 2 complete: Enriched ${enrichedInfluencers.length} influencers`,
-				completedSteps: 2,
+			websocketService.updateStep(currentDiscoveryId, `Stage 2 complete: Enriched ${enrichedInfluencers.length} influencers`, {
 				progress: 85,
 				stage: 'profile_enrichment_complete',
 				enrichedCount: enrichedInfluencers.length
 			});
 
 			// Update progress: Starting Stage 3 (final processing)
-			websocketService.updateProgress(currentDiscoveryId, {
-				currentStep: 'Stage 3: Finalizing results and saving to database...',
-				completedSteps: 2,
+			websocketService.updateStep(currentDiscoveryId, 'Stage 3: Finalizing results and saving to database...', {
 				progress: 90,
 				stage: 'final_processing'
 			});
