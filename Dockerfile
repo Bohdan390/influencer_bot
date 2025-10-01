@@ -19,7 +19,6 @@ COPY --from=builder /app/frontend/dist ./frontend/dist
 COPY --from=builder /app/frontend/node_modules ./frontend/node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json .
-COPY --from=builder /app/.env.example .
 
 EXPOSE 8080
 CMD ["npm", "start"]
