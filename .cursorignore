@@ -1,0 +1,15 @@
+# Override global ignore patterns to allow AI assistant full access
+# User has acknowledged security risks and wants full access
+
+# Allow access to environment files
+!.env
+!.env.*
+
+# Allow access to all config files
+!*.config.js
+!*.config.json
+
+# Allow access to all hidden files
+!.*
+
+# Only ignore node_modules and build outputs for performance
