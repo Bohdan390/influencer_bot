@@ -13,8 +13,7 @@ import { Rocket, Users, Mail, Clock, CheckCircle, AlertCircle, Instagram, Messag
 import { useToast } from "@/hooks/use-toast";
 import DiscoveryProgressNew from "./DiscoveryProgressNew";
 import { useWebSocket, useWebSocketListener } from "../contexts/WebSocketContext";
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+import { API_BASE, getApiUrl } from "../utils/api";
 
 const CampaignLauncher = () => {
   const [campaignData, setCampaignData] = useState({
@@ -175,7 +174,7 @@ const CampaignLauncher = () => {
         throw new Error('Target count must be between 1 and 200');
       }
 
-      const discoveryResponse = await fetch(`${API_BASE}/api/campaigns/discover`, {
+        const discoveryResponse = await fetch(getApiUrl('api/campaigns/discover'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(discoveryRequest)
@@ -211,23 +210,6 @@ const CampaignLauncher = () => {
       
       // Step 2: Setup Split Test (if enabled)
       let splitTestId = null;
-      if (campaignData.enableSplitTest) {
-        setLaunchStep('Setting up split test...');
-        
-        const splitTestResponse = await fetch(`${API_BASE}/api/split-tests/quick-start`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            test_type: 'unified_opener', // Support both email and DM testing
-            campaign_type: 'unified'
-          })
-        });
-        
-        if (splitTestResponse.ok) {
-          const splitTestData = await splitTestResponse.json();
-          splitTestId = splitTestData.test.id;
-        }
-      }
       setLaunchProgress(60);
       
       // Step 3: Unified Outreach (automatically chooses email or DM)
@@ -237,7 +219,7 @@ const CampaignLauncher = () => {
       // Determine template based on preferred method
       let template = campaignData.template || 'initial_outreach';
       
-      const outreachResponse = await fetch(`${API_BASE}/api/campaigns/send-outreach`, {
+      const outreachResponse = await fetch(getApiUrl('api/campaigns/send-outreach'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
