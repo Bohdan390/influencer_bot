@@ -42,7 +42,7 @@
     "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.1",
-    "puppeteer": "^24.22.0",
+    "puppeteer-core": "^24.22.0",
     "shopify-api-node": "^3.14.0"
   },
   "devDependencies": {

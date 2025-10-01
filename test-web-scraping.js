@@ -1,13 +1,11 @@
 const apifyService = require('./src/services/apify');
 
 async function testWebScraping() {
-    console.log('🧪 Testing Web Scraping with Lasers Medical Aesthetic Center...');
-    console.log('URL: https://lasersmedaesthetics.com/');
     console.log('=' .repeat(60));
 
     try {
         // Test the extractEmailFromExternalUrl method
-        const emails = await apifyService.extractEmailFromExternalUrl('https://sonicelectric.com/collections/malibu-lighting-products');
+        const emails = await apifyService.extractEmailFromExternalUrl('https://lasersmedaesthetics.com/');
         
         console.log('\n📧 EMAIL EXTRACTION RESULTS:');
         console.log('=' .repeat(40));

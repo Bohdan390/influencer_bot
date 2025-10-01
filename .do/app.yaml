@@ -7,7 +7,7 @@ services:
     branch: main
   build_command: |
     npm ci
-    npx puppeteer browsers install chrome --platform=linux
+    npx puppeteer-core browsers install chrome --platform=linux
     cd frontend && npm ci && npm run build
   run_command: node src/app.js
   environment_slug: node-js
