@@ -515,10 +515,10 @@ class ApifyService {
 	async checkPuppeteerAvailability() {
 		try {
 			// Try to find Chrome executable
-			const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
+			const executablePath =
+				'/usr/bin/chromium-browser' ||
 				'/workspace/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome' ||
 				'/usr/bin/google-chrome' ||
-				'/usr/bin/chromium-browser' ||
 				'/usr/bin/chromium';
 			
 			// Try to launch a minimal Puppeteer instance to test availability
