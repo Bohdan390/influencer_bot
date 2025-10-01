@@ -11,7 +11,7 @@ import DMModal from "./DMModal";
 import DiscoveryProgressNew from "./DiscoveryProgressNew";
 import { useWebSocket } from "../contexts/WebSocketContext";
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 const InfluencerDiscovery = () => {
   const [hashtags, setHashtags] = useState(['beauty', 'skincare', 'hairremoval']);
