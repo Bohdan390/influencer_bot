@@ -513,6 +513,7 @@ class ApifyService {
 			// Launch Puppeteer browser with stealth settings
 			browser = await puppeteer.launch({
 				headless: 'new', // Use new headless mode
+				executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, // Use environment path if available
 				args: [
 					'--no-sandbox',
 					'--disable-setuid-sandbox',
@@ -528,10 +529,13 @@ class ApifyService {
 					'--disable-renderer-backgrounding',
 					'--disable-field-trial-config',
 					'--disable-ipc-flooding-protection',
+					'--single-process', // Important for Digital Ocean
+					'--no-zygote', // Important for Digital Ocean
 					'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 				],
 				ignoreDefaultArgs: ['--enable-automation'],
-				ignoreHTTPSErrors: true
+				ignoreHTTPSErrors: true,
+				timeout: 60000 // Increase timeout for Digital Ocean
 			});
 
 			const page = await browser.newPage();
@@ -1403,6 +1407,10 @@ class ApifyService {
 					console.log(`📧 Scraped emails found: ${scrapedEmails.length}`);
 				} catch (error) {
 					console.log(`⚠️ Error scraping URL: ${error.message}`);
+					// If Puppeteer fails, continue without scraping - this is not critical
+					if (error.message.includes('Chrome') || error.message.includes('puppeteer')) {
+						console.log(`⚠️ Puppeteer/Chrome not available, skipping web scraping for ${externalUrl}`);
+					}
 				}
 			}
 		}
