@@ -703,7 +703,7 @@ class ApifyService {
 				args: [
 					'--no-sandbox', // Required for Digital Ocean App Platform
 					'--disable-setuid-sandbox',
-					'--disable-dev-shm-usage',
+					'--disable-dev-shm-usage', // Use /tmp instead of /dev/shm
 					'--disable-gpu',
 					'--no-zygote',
 					'--single-process', // Important for App Platform
@@ -714,6 +714,19 @@ class ApifyService {
 					'--disable-renderer-backgrounding',
 					'--disable-field-trial-config',
 					'--disable-ipc-flooding-protection',
+					'--disable-touch-emulation', // Prevent touch emulation errors
+					'--memory-pressure-off', // Disable memory pressure handling
+					'--max_old_space_size=512', // Limit memory usage to 512MB
+					'--disable-background-networking', // Reduce background processes
+					'--disable-default-apps', // Disable default apps
+					'--disable-sync', // Disable sync
+					'--disable-translate', // Disable translate
+					'--hide-scrollbars', // Hide scrollbars
+					'--mute-audio', // Mute audio
+					'--no-first-run', // Skip first run
+					'--disable-logging', // Disable logging
+					'--disable-permissions-api', // Disable permissions API
+					'--disable-notifications', // Disable notifications
 					'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 				],
 				ignoreDefaultArgs: ['--enable-automation'],
@@ -723,8 +736,8 @@ class ApifyService {
 
 			const page = await browser.newPage();
 
-			// Set viewport and additional stealth settings
-			await page.setViewport({ width: 1366, height: 768 });
+			// Set smaller viewport to reduce memory usage
+			await page.setViewport({ width: 1024, height: 768 });
 
 			// Override navigator properties to avoid detection
 			await page.evaluateOnNewDocument(() => {
@@ -780,8 +793,8 @@ class ApifyService {
 				});
 			}
 
-			// Wait a bit for any dynamic content to load
-			await new Promise(resolve => setTimeout(resolve, 2000));
+			// Wait a bit for any dynamic content to load (reduced time for memory efficiency)
+			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// Check if page loaded successfully
 			const currentUrl = page.url();
