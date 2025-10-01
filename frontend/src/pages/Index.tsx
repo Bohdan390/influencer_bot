@@ -69,9 +69,6 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">AI-Powered Influencer Marketing Platform</p>
               </div>
             </div>
-            <div className="text-sm text-green-600 font-medium">
-              ✅ All APIs Connected
-            </div>
           </div>
         </div>
       </header>

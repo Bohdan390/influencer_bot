@@ -1,6 +1,10 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY . .
+
+# Set environment variable for build process
+ENV VITE_API_BASE_URL=https://dermao-influencer-connect-xxxxx.ondigitalocean.app
+
 RUN npm install
 RUN cd frontend && npm install && npm run build
 
