@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getProxiedImageUrl } from "@/utils/imageProxy";
 import { 
   Check, 
   Mail, 
@@ -205,7 +206,7 @@ const CampaignManager = ({ onStatsUpdate }) => {
                 }}
               >
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={contact.influencers.profile_picture} alt={contact.influencers.name} />
+                  <AvatarImage src={getProxiedImageUrl(contact.influencers.profile_picture)} alt={contact.influencers.name} />
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
                     {contact.influencers.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}
                   </AvatarFallback>
@@ -280,7 +281,7 @@ const CampaignManager = ({ onStatsUpdate }) => {
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={selectedMessage.influencers.profile_picture} alt={selectedMessage.influencers.name} />
+                      <AvatarImage src={getProxiedImageUrl(selectedMessage.influencers.profile_picture)} alt={selectedMessage.influencers.name} />
                       <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
                         {selectedMessage.influencers.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}
                       </AvatarFallback>
