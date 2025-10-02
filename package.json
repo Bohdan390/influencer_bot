@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "puppeteer install"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "influencer-marketing",
@@ -43,8 +42,7 @@
     "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.1",
-    "shopify-api-node": "^3.14.0",
-    "puppeteer": "^22.5.0"
+    "shopify-api-node": "^3.14.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

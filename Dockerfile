@@ -11,10 +11,8 @@ RUN cd frontend && npm install && npm run build
 FROM node:18-alpine AS final
 
 # --- START ---
-# Install Chromium and certificates for Puppeteer
-RUN apk add --no-cache chromium ca-certificates
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# Install certificates for HTTPS requests (Cheerio + Axios)
+RUN apk add --no-cache ca-certificates
 # --- END ---
 
 WORKDIR /app
