@@ -482,37 +482,101 @@ class ApifyService {
 	}
 
 	/**
-	 * Enhanced HTTP request with better error handling and retry logic
+	 * Enhanced HTTP request with better error handling, retry logic, and anti-detection measures
 	 */
 	async makeHttpRequest(url, options = {}) {
 		const maxRetries = options.maxRetries || 3;
 		const timeout = options.timeout || 15000;
 		
+		// Random user agents to avoid detection
+		const userAgents = [
+			'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+			'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+			'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+			'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15',
+			'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0'
+		];
+		
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
+				// Random delay between requests to appear more human-like
+				if (attempt > 1) {
+					const delay = Math.random() * 2000 + 1000; // 1-3 seconds
+					await new Promise(resolve => setTimeout(resolve, delay));
+				}
+				
 				const response = await axios.get(url, {
 					timeout,
 					headers: {
-						'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-						'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-						'Accept-Language': 'en-US,en;q=0.5',
+						'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)],
+						'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+						'Accept-Language': 'en-US,en;q=0.9,en-GB;q=0.8',
 						'Accept-Encoding': 'gzip, deflate, br',
 						'Connection': 'keep-alive',
 						'Upgrade-Insecure-Requests': '1',
 						'Cache-Control': 'max-age=0',
+						'Sec-Fetch-Dest': 'document',
+						'Sec-Fetch-Mode': 'navigate',
+						'Sec-Fetch-Site': 'none',
+						'Sec-Fetch-User': '?1',
+						'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+						'Sec-Ch-Ua-Mobile': '?0',
+						'Sec-Ch-Ua-Platform': '"Windows"',
+						'DNT': '1',
+						'Referer': 'https://www.google.com/',
 						...options.headers
 					},
 					validateStatus: (status) => status < 500, // Don't throw on 4xx errors
-					maxRedirects: 5
+					maxRedirects: 5,
+					// Add random delay to requests
+					transformRequest: [(data, headers) => {
+						// Add a small random delay to make requests appear more natural
+						return data;
+					}]
 				});
+				
+				// Check for 403 Forbidden specifically
+				if (response.status === 403) {
+					console.log(`🚫 403 Forbidden - Website is blocking requests. Attempt ${attempt}/${maxRetries}`);
+					
+					if (attempt < maxRetries) {
+						// Try with different headers for 403 errors
+						const alternativeHeaders = {
+							'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+							'Accept': '*/*',
+							'Accept-Language': 'en-US,en;q=0.5',
+							'Accept-Encoding': 'gzip, deflate',
+							'Connection': 'keep-alive'
+						};
+						
+						console.log(`🔄 Retrying with alternative headers...`);
+						const retryResponse = await axios.get(url, {
+							timeout,
+							headers: alternativeHeaders,
+							validateStatus: (status) => status < 500,
+							maxRedirects: 5
+						});
+						
+						if (retryResponse.status !== 403) {
+							console.log(`✅ Alternative headers worked! Status: ${retryResponse.status}`);
+							return retryResponse;
+						}
+					}
+					
+					// Return the 403 response instead of throwing an error
+					// This allows the calling method to handle it appropriately
+					return response;
+				}
 				
 				return response;
 			} catch (error) {
 				console.log(`⚠️ HTTP request attempt ${attempt}/${maxRetries} failed: ${error.message}`);
 				
 				if (attempt < maxRetries) {
-					// Exponential backoff
-					await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+					// Exponential backoff with jitter
+					const baseDelay = 1000 * Math.pow(2, attempt - 1);
+					const jitter = Math.random() * 1000; // Add up to 1 second of jitter
+					await new Promise(resolve => setTimeout(resolve, baseDelay + jitter));
 					continue;
 				} else {
 					throw error;
@@ -669,6 +733,14 @@ class ApifyService {
 				throw new Error('No data received from URL');
 			}
 
+			// Check if we got a 403 Forbidden response
+			if (response.status === 403) {
+				console.log(`🚫 403 Forbidden - Website is blocking requests. Trying alternative approach...`);
+				
+				// Try with a different approach for blocked websites
+				return await this.extractEmailFromBlockedWebsite(cleanUrl, discoveryId);
+			}
+
 			// Update progress
 			if (discoveryId) {
 				websocketService.updateProgress(discoveryId, {
@@ -788,7 +860,9 @@ class ApifyService {
 	 */
 	isValidEmail(email) {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return email.includes(".com") && emailRegex.test(email) && !email.includes('..') && email.length <= 254;
+		// Check for common TLDs instead of just .com
+		const hasValidTld = /\.(com|org|net|co\.uk|uk|de|fr|es|it|nl|be|se|no|dk|fi|pl|cz|hu|ro|bg|hr|si|sk|lt|lv|ee|ie|pt|gr|cy|mt|lu|at|ch|li|is|fo|gl|ad|mc|sm|va|gi|je|gg|im|ax|al|ba|me|rs|mk|md|ua|by|ru|kz|kg|tj|tm|uz|az|am|ge|az|tr|il|ps|jo|lb|sy|iq|ir|af|pk|bd|lk|mv|bt|np|mm|th|la|kh|vn|my|sg|bn|id|ph|tl|mn|kp|kr|jp|cn|tw|hk|mo|my|sg|bn|id|ph|tl|mn|kp|kr|jp|cn|tw|hk|mo)$/i.test(email);
+		return hasValidTld && emailRegex.test(email) && !email.includes('..') && email.length <= 254;
 	}
 
 	/**
@@ -1467,6 +1541,155 @@ class ApifyService {
 				success: false,
 				error: error.message
 			};
+		}
+	}
+
+	/**
+	 * Alternative method for websites that block normal requests (403 Forbidden)
+	 */
+	async extractEmailFromBlockedWebsite(url, discoveryId = null) {
+		console.log(`🔄 Trying alternative approach for blocked website: ${url}`);
+		
+		try {
+			// Try with different user agents and headers
+			const alternativeApproaches = [
+				{
+					name: 'Googlebot',
+					headers: {
+						'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+						'Accept': '*/*',
+						'Accept-Language': 'en-US,en;q=0.5',
+						'Accept-Encoding': 'gzip, deflate',
+						'Connection': 'keep-alive'
+					}
+				},
+				{
+					name: 'Bingbot',
+					headers: {
+						'User-Agent': 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+						'Accept': '*/*',
+						'Accept-Language': 'en-US,en;q=0.5',
+						'Accept-Encoding': 'gzip, deflate',
+						'Connection': 'keep-alive'
+					}
+				},
+				{
+					name: 'Curl',
+					headers: {
+						'User-Agent': 'curl/7.68.0',
+						'Accept': '*/*',
+						'Accept-Language': 'en-US,en;q=0.5',
+						'Accept-Encoding': 'gzip, deflate',
+						'Connection': 'keep-alive'
+					}
+				}
+			];
+
+			for (const approach of alternativeApproaches) {
+				try {
+					console.log(`🔄 Trying ${approach.name} approach...`);
+					
+					const response = await axios.get(url, {
+						timeout: 15000,
+						headers: approach.headers,
+						validateStatus: (status) => status < 500,
+						maxRedirects: 5
+					});
+
+					if (response.status === 200 && response.data) {
+						console.log(`✅ ${approach.name} approach worked! Status: ${response.status}`);
+						
+						// Parse HTML with Cheerio for better extraction
+						const $ = cheerio.load(response.data);
+						
+						// Extract emails from various sources
+						const emails = [];
+						
+						// 1. Extract from mailto links
+						$('a[href^="mailto:"]').each((i, element) => {
+							const href = $(element).attr('href');
+							if (href) {
+								const email = href.replace('mailto:', '').split('?')[0].trim();
+								if (email) {
+									emails.push(email);
+								}
+							}
+						});
+
+						// 2. Extract from data attributes
+						$('[data-email], [data-contact], [data-mail]').each((i, element) => {
+							const email = $(element).attr('data-email') ||
+								$(element).attr('data-contact') ||
+								$(element).attr('data-mail');
+							if (email) {
+								emails.push(email);
+							}
+						});
+
+						// 3. Extract from contact-related elements
+						const contactSelectors = [
+							'[class*="contact"]',
+							'[class*="email"]',
+							'[class*="about"]',
+							'[class*="bio"]',
+							'[id*="contact"]',
+							'[id*="email"]',
+							'[id*="about"]',
+							'[id*="bio"]'
+						];
+
+						let contactTexts = '';
+						contactSelectors.forEach(selector => {
+							$(selector).each((i, element) => {
+								contactTexts += ' ' + $(element).text();
+							});
+						});
+
+						// 4. Extract from all text content
+						const allText = $('body').text() + ' ' + contactTexts + ' ' + response.data;
+
+						// 5. Extract emails using regex patterns
+						const regexEmails = this.extractEmailsFromText(allText);
+						emails.push(...regexEmails);
+						
+						// Remove duplicates and validate
+						const uniqueEmails = [...new Set(emails)].filter(email => this.isValidEmail(email));
+						
+						if (uniqueEmails.length > 0) {
+							console.log(`✅ Found ${uniqueEmails.length} email(s) using ${approach.name}: ${uniqueEmails.join(', ')}`);
+							
+							// Update progress if discovery ID provided
+							if (discoveryId) {
+								const discovery = websocketService.getDiscovery(discoveryId);
+								const currentEmailsFound = discovery ? discovery.emailsFound : 0;
+								const newEmailsFound = currentEmailsFound + uniqueEmails.length;
+								
+								websocketService.updateProgress(discoveryId, {
+									currentStep: `✅ Found ${uniqueEmails.length} email(s) using ${approach.name}`,
+									stage: 'url_scraping_complete',
+									emailsFound: newEmailsFound,
+									emails: uniqueEmails
+								});
+							}
+							
+							return uniqueEmails;
+						} else {
+							console.log(`⚠️ ${approach.name} approach worked but no emails found in parsed content`);
+						}
+					}
+				} catch (error) {
+					console.log(`⚠️ ${approach.name} approach failed: ${error.message}`);
+					continue;
+				}
+			}
+
+			// If all approaches fail, return empty array
+			console.log(`❌ All alternative approaches failed for ${url}`);
+			return [];
+
+		} catch (error) {
+			console.error(`❌ Error in alternative approach for ${url}:`, error.message);
+			return [];
 		}
 	}
 

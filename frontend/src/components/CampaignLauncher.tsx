@@ -586,14 +586,19 @@ const CampaignLauncher = () => {
           
           <Button
             onClick={launchCampaign}
-            disabled={isLaunching}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            disabled={isLaunching || isDiscoveryActive}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
             size="lg"
           >
             {isLaunching ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 Launching Campaign...
+              </>
+            ) : isDiscoveryActive ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                Discovering Influencers...
               </>
             ) : (
               <>
@@ -602,6 +607,19 @@ const CampaignLauncher = () => {
               </>
             )}
           </Button>
+          
+          {/* Discovery Status Message */}
+          {isDiscoveryActive && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-blue-700">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <span className="font-medium">Discovery in Progress</span>
+              </div>
+              <p className="text-xs text-blue-600 mt-1">
+                Please wait while we discover and analyze influencers. The button will be enabled once discovery is complete.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

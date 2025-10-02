@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 
 # Set environment variable for build process
-ENV VITE_API_BASE_URL=https://influencer-bot-hzuxy.ondigitalocean.app/
+ENV VITE_API_BASE_URL=https://influencer-bot-hzuxy.ondigitalocean.app
 
 RUN npm install
 RUN cd frontend && npm install && npm run build
