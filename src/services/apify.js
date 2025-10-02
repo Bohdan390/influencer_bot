@@ -696,6 +696,17 @@ class ApifyService {
 				});
 			}
 
+
+			const fs = require('fs');
+
+			const path = '/usr/bin/chromium-browser';
+			fs.access(path, fs.constants.X_OK, (err) => {
+			if (err) {
+				console.log(`${path} does NOT exist or is not executable`);
+			} else {
+				console.log(`${path} exists and is executable`);
+			}
+			});
 			// Launch Puppeteer browser with Digital Ocean App Platform settings
 			browser = await puppeteer.launch({
 				executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
