@@ -19,7 +19,7 @@ class EmailService {
         port: config.apis.email.smtp_port || process.env.SMTP_PORT || 587,
         secure: false, // true for 465, false for other ports
         auth: {
-          user: config.apis.email.smtp_user || process.env.SMTP_USER || 'bohdanmotrych8@gmail.com',
+          user: config.apis.email.smtp_user || process.env.SMTP_USER || 'influencers@trycosara.com',
           pass: config.apis.email.smtp_pass || process.env.SMTP_PASS
         }
       };
@@ -414,10 +414,10 @@ class EmailService {
    */
   getTemplate(templateType) {
     // Import the new Cosara templates
-    const dermaoTemplates = require('../templates/cosara-templates');
+    const cosaraTemplates = require('../templates/cosara-templates');
     
     // Return the requested template or null if not found
-    return dermaoTemplates[templateType] || null;
+    return cosaraTemplates[templateType] || null;
   }
 }
 

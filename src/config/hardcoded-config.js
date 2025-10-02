@@ -16,7 +16,7 @@ const hardcodedConfig = {
     email: {
       provider: 'brevo',
       brevo_api_key: process.env.BREVO_API_KEY,
-      from_email: 'bohdanmotrych8@gmail.com',
+      from_email: 'influencers@trycosara.com',
       from_name: 'Cosara Partnership Team'
     },
 
@@ -29,11 +29,11 @@ const hardcodedConfig = {
     // Instagram Automation - DM sending
     instagram: {
       username: 'cosara.beauty',
-      password: 'Dermao2024!',
+      password: 'Cosara2025!',
       accounts: [
         {
           username: 'cosara.beauty',
-          password: 'Dermao2024!',
+          password: 'Cosara2025!',
           priority: 1
         }
       ]
@@ -89,7 +89,7 @@ const hardcodedConfig = {
       auto_ship_threshold: 0.8,
       sender_name: 'Cosara Partnership Team',
       sender_email: 'influencers@trycosara.com',
-      signature: 'Best regards,\nDermao Partnership Team\nBeauty Technology Innovation\n\n--\nDermao IPL Hair Removal\nwww.cosara.com | @cosara.official'
+      signature: 'Best regards,\nCosara Partnership Team\nBeauty Technology Innovation\n\n--\nCosara IPL Hair Removal\nwww.cosara.com | @cosara.official'
     }
   },
 

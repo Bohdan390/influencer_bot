@@ -408,11 +408,11 @@ class AuthService {
         console.log('📝 Creating default admin user...');
         await this.createUser({
           email: 'admin@cosara.com',
-          password: 'DermaoAdmin123!',
+          password: 'CosaraAdmin123!',
           full_name: 'Cosara Administrator',
           company: 'Cosara'
         });
-        console.log('✅ Default admin user created: admin@cosara.com / DermaoAdmin123!');
+        console.log('✅ Default admin user created: admin@cosara.com / CosaraAdmin123!');
       }
     } catch (error) {
       console.log('⚠️ Could not create default user:', error.message);
@@ -536,7 +536,7 @@ class AuthService {
         sender_name: 'Cosara Team',
         sender_email: 'influencers@trycosara.com',
         reply_to: 'hello@cosara.com',
-        signature: 'Best regards,\nThe Cosara Team\n\n--\nDermao IPL Hair Removal\nwww.cosara.com'
+        signature: 'Best regards,\nThe Cosara Team\n\n--\nCosara IPL Hair Removal\nwww.cosara.com'
       },
       created_at: new Date(),
       updated_at: new Date()

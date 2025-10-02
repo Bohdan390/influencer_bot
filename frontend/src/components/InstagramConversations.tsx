@@ -50,7 +50,7 @@ const InstagramConversations = () => {
   }, []);
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('dermao_token');
+    const token = localStorage.getItem('cosara_token');
     return {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`

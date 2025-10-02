@@ -40,7 +40,7 @@ const SettingsPage = () => {
     sender_name: 'Cosara Team',
           sender_email: 'influencers@trycosara.com',
     reply_to: 'hello@cosara.com',
-    signature: 'Best regards,\nThe Cosara Team\n\n--\nDermao IPL Hair Removal\nwww.cosara.com'
+    signature: 'Best regards,\nThe Cosara Team\n\n--\nCosara IPL Hair Removal\nwww.cosara.com'
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,7 @@ const SettingsPage = () => {
   }, []);
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('dermao_token');
+    const token = localStorage.getItem('cosara_token');
     return {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`

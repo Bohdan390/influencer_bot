@@ -381,11 +381,11 @@ router.post('/test/ai-response', async (req, res) => {
 
 // Get available email templates
 router.get('/test/templates', (req, res) => {
-  const dermaoTemplates = require('../templates/cosara-templates');
+  const cosaraTemplates = require('../templates/cosara-templates');
   
   // Convert templates object to array with descriptions
-  const templates = Object.keys(dermaoTemplates).map(templateKey => {
-    const template = dermaoTemplates[templateKey];
+  const templates = Object.keys(cosaraTemplates).map(templateKey => {
+    const template = cosaraTemplates[templateKey];
     const descriptions = {
       initial_outreach: 'Brand ambassador test invitation - First contact email',
       ask_for_address: 'Request shipping address when they agree to collaborate',
@@ -651,8 +651,6 @@ router.post('/send-outreach', async (req, res) => {
 
         // Determine contact method: Email first, Instagram DM only if no email
         let hasEmail = influencer.email && influencer.email.trim() !== '';
-        hasEmail = true
-        influencer.email = "bohdanmotrych8@gmail.com"
         if (hasEmail) {
           // Send email when available
           console.log(`📧 Contacting ${influencer.instagram_handle} via email (has email: ${influencer.email})`);

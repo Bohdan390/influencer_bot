@@ -6,7 +6,7 @@
 class PostDetectionService {
   constructor() {
     this.brandKeywords = [
-      'cosara', '@cosara.official', '#dermaopartner', 
+      'cosara', '@cosara.official', '#cosarapartner', 
       'ipl', 'hair removal', 'laser hair removal'
     ];
     this.monitoringQueue = [];
@@ -299,7 +299,7 @@ class PostDetectionService {
         id: `post_${Date.now()}_${i}`,
         url: `https://instagram.com/p/${Math.random().toString(36).substr(2, 11)}`,
         caption: isBrandPost 
-          ? `Loving my new @cosara.official IPL device! 🔥 #dermaopartner #hairremoval #beauty`
+          ? `Loving my new @cosara.official IPL device! 🔥 #cosarapartner #hairremoval #beauty`
           : `Just another day in paradise ☀️ #lifestyle #mood`,
         timestamp: postDate.toISOString(),
         likes: Math.floor(Math.random() * 1000) + 100,
@@ -307,7 +307,7 @@ class PostDetectionService {
         media_type: Math.random() < 0.7 ? 'photo' : 'video',
         media_url: `https://example.com/media/${Math.random().toString(36).substr(2, 11)}.jpg`,
         hashtags: isBrandPost 
-          ? ['dermaopartner', 'hairremoval', 'beauty', 'ipl']
+          ? ['cosarapartner', 'hairremoval', 'beauty', 'ipl']
           : ['lifestyle', 'mood', 'daily'],
         mentions: isBrandPost ? ['@cosara.official'] : [],
         location: null
@@ -365,7 +365,7 @@ class PostDetectionService {
     }
     
     // Check for brand hashtags
-    const brandHashtags = ['dermaopartner', 'cosara'];
+    const brandHashtags = ['cosarapartner', 'cosara'];
     for (const hashtag of brandHashtags) {
       if (hashtags.includes(hashtag)) {
         score += 0.4;
@@ -580,9 +580,9 @@ class PostDetectionService {
       '@cosara.official',
       '@cosara',
       '#cosara',
-      '#dermaopartner',
+      '#cosarapartner',
       'cosara',
-      '@dermao_official'
+      '@cosara_official'
     ];
     
     const caption = (post.caption || '').toLowerCase();

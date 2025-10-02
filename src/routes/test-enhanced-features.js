@@ -533,12 +533,12 @@ router.post('/slack-archive-test', async (req, res) => {
     // Mock post data with brand mention
     const mockPost = {
       url: 'https://instagram.com/p/test123',
-      caption: 'Loving my new IPL device from @cosara.official! #dermaopartner #skincare',
+      caption: 'Loving my new IPL device from @cosara.official! #cosarapartner #skincare',
       created_at: new Date().toISOString(),
       likes_count: 245,
       comments_count: 18,
       engagement_rate: 1.75,
-      hashtags: ['#dermaopartner', '#skincare', '#ipl'],
+      hashtags: ['#cosarapartner', '#skincare', '#ipl'],
       mentions: ['@cosara.official']
     };
     

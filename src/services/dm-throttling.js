@@ -206,7 +206,7 @@ class DMThrottlingService {
     // Fallback to environment variables
     return [
       {
-        username: process.env.INSTAGRAM_USERNAME || 'dermao_partnerships',
+        username: process.env.INSTAGRAM_USERNAME || 'cosara_partnerships',
         password: process.env.INSTAGRAM_PASSWORD || '',
         proxy: null,
         priority: 1

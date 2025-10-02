@@ -120,7 +120,7 @@ Here's what happens next:
 • We'll send you the Cosara IPL device (worth $299) for free
 • Once you receive it, test it out for 2-3 weeks
 • Create one authentic post about your experience
-• Tag @cosara.official and use #DermaoPartner
+• Tag @cosara.official and use #CosaraPartner
 
 The results are incredible - you're going to love it! Can you send me your shipping details? 📦💜`,
       category: 'positive_response',
@@ -139,7 +139,7 @@ To get your IPL device shipped out, I'll need:
 Once you receive the device:
 • Test it for 2-3 weeks to see the amazing results
 • Create authentic content about your experience  
-• Tag @cosara.official and use #DermaoPartner
+• Tag @cosara.official and use #CosaraPartner
 • If the content meets our standards, potential for ongoing collaboration
 
 Sound good? Send over those shipping details when you're ready! 💜`,
@@ -271,7 +271,7 @@ const dmHelpers = {
 // 🧪 SPLIT TEST CONFIGURATIONS
 // =====================================
 const instagramSplitTestConfigs = {
-  dermao_launch_campaign: {
+  cosara_launch_campaign: {
     name: 'Cosara IPL Launch - Instagram DM Test',
     variants: [
       'dm_brand_focused',

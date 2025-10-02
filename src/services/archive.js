@@ -32,12 +32,12 @@ class ArchiveService {
       
       const searchTerms = {
         hashtags: [
-          process.env.CAMPAIGN_HASHTAG || '#DermaoPartner',
+          process.env.CAMPAIGN_HASHTAG || '#CosaraPartner',
           '#Cosara',
-          '#DermaoReview',
+          '#CosaraReview',
           '#IPLHairRemoval',
-          '#DermaoSkincare',
-          '#DermaoBeauty'
+          '#CosaraSkincare',
+          '#CosaraBeauty'
         ],
         mentions: [
           process.env.BRAND_INSTAGRAM || '@cosara.official',
@@ -233,7 +233,7 @@ class ArchiveService {
       // Brand compliance scoring
       const brandMentions = mentions.filter(m => 
         m.toLowerCase().includes('cosara') || 
-        m.toLowerCase().includes('dermaofficial')
+        m.toLowerCase().includes('cosarafficial')
       );
       
       const brandHashtags = hashtags.filter(h => 

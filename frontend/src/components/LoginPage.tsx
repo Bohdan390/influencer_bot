@@ -50,9 +50,9 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
       if (result.success) {
         // Store authentication data
-        localStorage.setItem("dermao_authenticated", "true");
-        localStorage.setItem("dermao_token", result.data.token);
-        localStorage.setItem("dermao_user", JSON.stringify(result.data.user));
+        localStorage.setItem("cosara_authenticated", "true");
+        localStorage.setItem("cosara_token", result.data.token);
+        localStorage.setItem("cosara_user", JSON.stringify(result.data.user));
         
         setSuccess("Login successful!");
         setTimeout(() => onLogin(), 1000);

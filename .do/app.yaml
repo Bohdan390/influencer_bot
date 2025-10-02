@@ -46,7 +46,7 @@ services:
   - key: DEFAULT_PRODUCT_VALUE
     value: "299"
   - key: CAMPAIGN_HASHTAG
-    value: "#DermaoPartner"
+    value: "#CosaraPartner"
   - key: BRAND_INSTAGRAM
     value: "@cosara.official"
   - key: GEMINI_API_KEY
