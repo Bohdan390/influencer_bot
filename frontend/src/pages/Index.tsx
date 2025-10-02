@@ -36,7 +36,7 @@ const Index = () => {
     setTestResult(null);
     
     try {
-      const response = await fetch(`${API_BASE}/api/test/scraping`, {
+      const response = await fetch(`${API_BASE}api/test/scraping`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
