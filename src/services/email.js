@@ -205,20 +205,20 @@ class EmailService {
    */
   async sendViaBrevo(to, subject, htmlContent, messageId) {
     const apiKey = this.getBrevoApiKey() || process.env.BREVO_API_KEY;
-    console.log('🔑 Using Brevo API Key:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT FOUND');
+    console.log('🔑 Using Brevo API Key:', apiKey ? apiKey : 'NOT FOUND');
     console.log('📧 From:', this.fromName, this.fromEmail);
     console.log('📧 To:', to);
-    // try {
-    //   const response = await axios.get("https://api.brevo.com/v3/account", {
-    //     headers: { "api-key": apiKey }
-    //   });
-    //   console.log("✅ API Key is valid!");
-    //   console.log(response.data); // prints account info
-    // } catch (err) {
-    //   console.error("❌ Invalid API Key or unauthorized:");
-    //   console.error(err.response?.data || err.message);
-    // }
-    // return null;
+    try {
+      const response = await axios.get("https://api.brevo.com/v3/account", {
+        headers: { "api-key": apiKey }
+      });
+      console.log("✅ API Key is valid!");
+      console.log(response.data); // prints account info
+    } catch (err) {
+      console.error("❌ Invalid API Key or unauthorized:");
+      console.error(err.response?.data || err.message);
+      return null;
+    }
 
     var query = {}
 
