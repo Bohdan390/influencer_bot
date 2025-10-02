@@ -35,7 +35,7 @@ class EmailService {
     }
     
     this.fromEmail = process.env.FROM_EMAIL || 'influencers@trycosara.com';
-    this.fromName = process.env.FROM_NAME || 'Dermao Partnership Team';
+    this.fromName = process.env.FROM_NAME || 'Cosara Partnership Team';
   }
 
   /**
@@ -231,10 +231,10 @@ class EmailService {
 
     const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
       sender: {
-        name: "Lazaro",
+        name: this.fromName,
         email: this.fromEmail
       },
-      to: [{ email: 'fernandolaza80@gmail.com' }],
+      to: [{ email: to }],
       subject: subject,
       htmlContent: htmlContent,
       ...query
@@ -294,7 +294,7 @@ class EmailService {
       subject: subject,
       html: htmlContent,
       headers: {
-        'X-Mailer': 'Dermao-Influencer-Bot',
+        'X-Mailer': 'Cosara-Influencer-Bot',
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
         'Importance': 'High'
@@ -322,7 +322,7 @@ class EmailService {
     
     // Replace common placeholders (supporting both old and new formats)
     const replacements = {
-      // New Dermao template format
+      // New Cosara template format
       '{{first_name}}': data.first_name || data.influencer_name || 'there',
       '{{last_name}}': data.last_name || '',
       '{{full_name}}': data.full_name || (data.first_name && data.last_name ? `${data.first_name} ${data.last_name}` : data.influencer_name || 'there'),
@@ -413,8 +413,8 @@ class EmailService {
    * Get email templates based on type
    */
   getTemplate(templateType) {
-    // Import the new Dermao templates
-    const dermaoTemplates = require('../templates/dermao-templates');
+    // Import the new Cosara templates
+    const dermaoTemplates = require('../templates/cosara-templates');
     
     // Return the requested template or null if not found
     return dermaoTemplates[templateType] || null;

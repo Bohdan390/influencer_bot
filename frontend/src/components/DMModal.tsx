@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Mail, Instagram, Send, Sparkles, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getProxiedImageUrl } from '@/utils/imageProxy';
 
 interface Influencer {
   id: string | number;
@@ -175,7 +176,7 @@ const DMModal: React.FC<DMModalProps> = ({
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <Avatar className="h-10 w-10">
               <AvatarImage 
-                src={influencer.profile_picture} 
+                src={getProxiedImageUrl(influencer.profile_picture)} 
                 alt={influencer.full_name || influencer.instagram_handle}
               />
               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">

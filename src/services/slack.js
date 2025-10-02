@@ -26,7 +26,7 @@ class SlackService {
       const timestamp = new Date().toISOString().split('T')[0];
       
       const archiveMessage = {
-        text: `📁 Post Archived: ${influencer.instagram_handle} tagged @dermao.official`,
+        text: `📁 Post Archived: ${influencer.instagram_handle} tagged @cosara.official`,
         blocks: [
           {
             type: "header",
@@ -586,7 +586,7 @@ class SlackService {
 
     try {
       const testMessage = {
-        text: '🧪 Test Notification from Dermao Influencer Bot',
+        text: '🧪 Test Notification from Cosara Influencer Bot',
         blocks: [
           {
             type: "section",

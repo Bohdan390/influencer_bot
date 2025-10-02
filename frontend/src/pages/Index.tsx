@@ -24,7 +24,7 @@ const Index = () => {
   });
   
   // Test scraping state
-  const [testUrl, setTestUrl] = useState("https://dermao.com");
+  const [testUrl, setTestUrl] = useState("https://cosara.com");
   const [testResult, setTestResult] = useState(null);
   const [isTesting, setIsTesting] = useState(false);
 
@@ -101,7 +101,7 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Dermao Influencer Hub
+                  Cosara Influencer Hub
                 </h1>
                 <p className="text-sm text-muted-foreground">AI-Powered Influencer Marketing Platform</p>
               </div>
@@ -113,7 +113,7 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-[700px] mx-auto">
+          <TabsList className="grid w-full grid-cols-4 lg:w-[700px] mx-auto">
             <TabsTrigger value="launch" className="flex items-center gap-2">
               <Rocket className="w-4 h-4" />
               Launch
@@ -142,18 +142,18 @@ const Index = () => {
               <Users className="w-4 h-4" />
               Database
             </TabsTrigger>
-            <TabsTrigger value="instagram" className="flex items-center gap-2">
+            {/* <TabsTrigger value="instagram" className="flex items-center gap-2">
               <Instagram className="w-4 h-4" />
               Instagram
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Dashboard
             </TabsTrigger>
-            <TabsTrigger value="test" className="flex items-center gap-2">
+            {/* <TabsTrigger value="test" className="flex items-center gap-2">
               <TestTube className="w-4 h-4" />
               Test
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="launch" className="space-y-6">
@@ -191,7 +191,7 @@ const Index = () => {
                 <div className="flex gap-2">
                   <Input
                     type="url"
-                    placeholder="Enter URL to test (e.g., https://dermao.com)"
+                    placeholder="Enter URL to test (e.g., https://cosara.com)"
                     value={testUrl}
                     onChange={(e) => setTestUrl(e.target.value)}
                     className="flex-1"

@@ -10,7 +10,7 @@ const emailVariants = {
       id: 'var_initial_a',
       name: 'Brand Ambassador Test (Current)',
       description: 'Frames as test opportunity with performance-based future',
-      subject: 'Brand Ambassador Opportunity with Dermao',
+      subject: 'Brand Ambassador Opportunity with Cosara',
       html: `<!DOCTYPE html>
 <html>
   <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 16px; color: #000000; background-color: #ffffff;">
@@ -19,7 +19,7 @@ const emailVariants = {
         <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          I'm reaching out on behalf of <strong>Dermao</strong> — a revolutionary beauty tech brand that's changing how people approach hair removal.
+          I'm reaching out on behalf of <strong>Cosara</strong> — a revolutionary beauty tech brand that's changing how people approach hair removal.
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -39,7 +39,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Best regards,</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">The Dermao Partnership Team</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">The Cosara Partnership Team</p>
       </td></tr>
     </table>
   </body>
@@ -64,7 +64,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          I work with <strong>Dermao</strong>, and we'd love to send you our IPL Hair Laser device as a gift — no strings attached! It's worth $299 and we think you'd genuinely love the results.
+          I work with <strong>Cosara</strong>, and we'd love to send you our IPL Hair Laser device as a gift — no strings attached! It's worth $299 and we think you'd genuinely love the results.
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -80,7 +80,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Excited to connect!</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">Sarah from Dermao ✨</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">Sarah from Cosara ✨</p>
       </td></tr>
     </table>
   </body>
@@ -101,11 +101,11 @@ const emailVariants = {
         <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          I've been following your content and you have exactly the authentic voice we're looking for at <strong>Dermao</strong>.
+          I've been following your content and you have exactly the authentic voice we're looking for at <strong>Cosara</strong>.
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          We're working with 50+ creators right now who are loving our IPL Hair Laser technology. The results and content they're creating have been incredible — check out @dermao.official to see!
+          We're working with 50+ creators right now who are loving our IPL Hair Laser technology. The results and content they're creating have been incredible — check out @cosara.official to see!
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -127,7 +127,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Best,</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">Dermao Creator Team</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">Cosara Creator Team</p>
       </td></tr>
     </table>
   </body>
@@ -163,7 +163,7 @@ const emailVariants = {
         </ul>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          That's exactly why I'm obsessed with <strong>Dermao's IPL technology</strong>. It's changed everything for me and thousands of others.
+          That's exactly why I'm obsessed with <strong>Cosara's IPL technology</strong>. It's changed everything for me and thousands of others.
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -175,7 +175,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Talk soon,</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">Emma from Dermao 💜</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">Emma from Cosara 💜</p>
       </td></tr>
     </table>
   </body>
@@ -215,7 +215,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Best,</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">Dermao Team</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">Cosara Team</p>
       </td></tr>
     </table>
   </body>
@@ -257,7 +257,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Best,</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">Dermao Team</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">Cosara Team</p>
       </td></tr>
     </table>
   </body>
@@ -318,7 +318,7 @@ const emailVariants = {
         <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          Great to hear you're interested in collaborating with Dermao! 
+          Great to hear you're interested in collaborating with Cosara! 
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -340,7 +340,7 @@ const emailVariants = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Best regards,</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">Dermao Partnership Team</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">Cosara Partnership Team</p>
       </td></tr>
     </table>
   </body>

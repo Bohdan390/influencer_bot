@@ -29,7 +29,7 @@ router.post('/generate-message', async (req, res) => {
       {
         template: 'personalized',
         productOffer: 'IPL Hair Laser Device',
-        brandName: 'Dermao',
+        brandName: 'Cosara',
         campaignType: campaignType,
         dmType: dmType
       }
@@ -136,7 +136,7 @@ router.post('/generate-bulk-message', async (req, res) => {
       {
         template: 'bulk_personalized',
         productOffer: 'IPL Hair Laser Device',
-        brandName: 'Dermao',
+        brandName: 'Cosara',
         campaignType: campaignType,
         dmType: 'email'
       }

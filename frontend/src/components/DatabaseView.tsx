@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DMModal from "./DMModal";
 import BulkEmailModal from "./BulkEmailModal";
 import { useToast } from "@/hooks/use-toast";
+import { getProxiedImageUrl } from "@/utils/imageProxy";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -482,7 +483,7 @@ const DatabaseView = () => {
                       <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12 flex-shrink-0">
                           <AvatarImage 
-                            src={influencer.profile_image || influencer.profile_picture} 
+                            src={getProxiedImageUrl(influencer.profile_picture)} 
                             alt={influencer.full_name || influencer.instagram_handle}
                           />
                           <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
@@ -587,10 +588,7 @@ const DatabaseView = () => {
                         </Button>
                         {
                           influencer.journey_stage != 'discovered' ? 
-                          <Button variant="ghost" size="sm"
-                          onClick={() => handleOpenDMModal(influencer)}
-                          
-                          >
+                          <Button variant="ghost" size="sm">
                               <CheckCircle className="h-4 w-4 text-blue-800" />
                             </Button>
                             : (

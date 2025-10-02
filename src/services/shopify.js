@@ -188,7 +188,7 @@ class ShopifyService {
           },
           line_items: [
             {
-              title: productData.title || 'Dermao IPL Hair Laser Device',
+              title: productData.title || 'Cosara IPL Hair Laser Device',
               price: '0.00', // Free for influencers
               quantity: 1,
               requires_shipping: true,

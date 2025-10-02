@@ -408,7 +408,7 @@ const CampaignsPage: React.FC = () => {
                   id="subject"
                   value={emailForm.subject}
                   onChange={(e) => setEmailForm(prev => ({ ...prev, subject: e.target.value }))}
-                  placeholder="Partnership Opportunity with Dermao"
+                  placeholder="Partnership Opportunity with Cosara"
                 />
               </div>
               

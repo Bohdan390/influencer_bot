@@ -1,4 +1,4 @@
-# Dermao Influencer Marketing Bot - Production Ready
+# Cosara Influencer Marketing Bot - Production Ready
 
 ## 🎉 System Status: PRODUCTION READY (85.7% Success Rate)
 
@@ -101,7 +101,7 @@ npm start
 
 ### 2. Access the Dashboard
 - Local: http://localhost:3000
-- Production: https://dermao-influencer-m78a0t1e1-ecomquiz.vercel.app
+- Production: https://cosara-influencer-m78a0t1e1-ecomquiz.vercel.app
 
 ### 3. Launch a Campaign
 1. Go to "Launch" tab

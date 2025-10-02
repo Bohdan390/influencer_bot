@@ -381,7 +381,7 @@ router.post('/test/ai-response', async (req, res) => {
 
 // Get available email templates
 router.get('/test/templates', (req, res) => {
-  const dermaoTemplates = require('../templates/dermao-templates');
+  const dermaoTemplates = require('../templates/cosara-templates');
   
   // Convert templates object to array with descriptions
   const templates = Object.keys(dermaoTemplates).map(templateKey => {
@@ -669,7 +669,7 @@ router.post('/send-outreach', async (req, res) => {
             personalizedContent = await aiService.generatePersonalizedOutreach(influencer, {
               template,
               productOffer,
-              brandName: 'Dermao',
+              brandName: 'Cosara',
               campaignType: 'product_collaboration'
             });
             console.log(`✅ Generated content for ${influencer.instagram_handle}:`, {

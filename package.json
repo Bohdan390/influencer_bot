@@ -1,7 +1,7 @@
 {
-  "name": "dermao-influencer-marketing-bot",
+  "name": "cosara-influencer-marketing-bot",
   "version": "1.0.0",
-  "description": "Automated influencer marketing system for Dermao.com IPL hair laser campaigns",
+  "description": "Automated influencer marketing system for Cosara.com IPL hair laser campaigns",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -13,9 +13,9 @@
     "automation",
     "instagram",
     "email-campaigns",
-    "dermao"
+    "cosara"
   ],
-  "author": "Dermao Team",
+  "author": "Cosara Team",
   "license": "ISC",
   "engines": {
     "node": ">=18.0.0",

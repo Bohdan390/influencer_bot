@@ -33,22 +33,22 @@ class ArchiveService {
       const searchTerms = {
         hashtags: [
           process.env.CAMPAIGN_HASHTAG || '#DermaoPartner',
-          '#Dermao',
+          '#Cosara',
           '#DermaoReview',
           '#IPLHairRemoval',
           '#DermaoSkincare',
           '#DermaoBeauty'
         ],
         mentions: [
-          process.env.BRAND_INSTAGRAM || '@dermao.official',
-          'dermao',
-          'Dermao'
+          process.env.BRAND_INSTAGRAM || '@cosara.official',
+          'cosara',
+          'Cosara'
         ],
         keywords: [
-          'Dermao IPL',
-          'Dermao device',
-          'Dermao hair removal',
-          'Dermao skincare'
+          'Cosara IPL',
+          'Cosara device',
+          'Cosara hair removal',
+          'Cosara skincare'
         ]
       };
 
@@ -153,7 +153,7 @@ class ArchiveService {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
-          'User-Agent': 'Dermao-Influencer-Bot/1.0'
+          'User-Agent': 'Cosara-Influencer-Bot/1.0'
         },
         params: searchParams,
         timeout: 30000 // 30 second timeout
@@ -232,12 +232,12 @@ class ArchiveService {
       
       // Brand compliance scoring
       const brandMentions = mentions.filter(m => 
-        m.toLowerCase().includes('dermao') || 
+        m.toLowerCase().includes('cosara') || 
         m.toLowerCase().includes('dermaofficial')
       );
       
       const brandHashtags = hashtags.filter(h => 
-        h.toLowerCase().includes('dermao') ||
+        h.toLowerCase().includes('cosara') ||
         h.toLowerCase().includes('dermapartner') ||
         h.toLowerCase().includes('ipl')
       );
@@ -246,7 +246,7 @@ class ArchiveService {
       let complianceScore = 0;
       if (brandMentions.length > 0) complianceScore += 40;
       if (brandHashtags.length > 0) complianceScore += 30;
-      if (caption.toLowerCase().includes('dermao')) complianceScore += 20;
+      if (caption.toLowerCase().includes('cosara')) complianceScore += 20;
       if (hashtags.length >= 5) complianceScore += 10;
       
       // Quality assessment

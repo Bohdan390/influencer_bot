@@ -343,20 +343,20 @@ class EmailWebhookHandler {
     const samples = {
       brevo: {
         from: { email: 'test.influencer@gmail.com' },
-        subject: 'Re: Brand Ambassador Opportunity with Dermao IPL',
+        subject: 'Re: Brand Ambassador Opportunity with Cosara IPL',
         body_plain: 'Hi! I\'m interested in your brand ambassador program. My shipping address is 123 Main St, New York, NY 10001. I\'d love to create content featuring your IPL device!',
         message_id: 'test-message-123',
         date: new Date().toISOString()
       },
       sendgrid: {
         from: 'test.influencer@gmail.com',
-        subject: 'Re: Brand Ambassador Opportunity with Dermao IPL',
+        subject: 'Re: Brand Ambassador Opportunity with Cosara IPL',
         text: 'Hi! I\'m interested in your brand ambassador program. My shipping address is 123 Main St, New York, NY 10001. I\'d love to create content featuring your IPL device!',
         message_id: 'test-message-123'
       },
       mailgun: {
         sender: 'test.influencer@gmail.com',
-        subject: 'Re: Brand Ambassador Opportunity with Dermao IPL',
+        subject: 'Re: Brand Ambassador Opportunity with Cosara IPL',
         'body-plain': 'Hi! I\'m interested in your brand ambassador program. My shipping address is 123 Main St, New York, NY 10001. I\'d love to create content featuring your IPL device!',
         'Message-Id': 'test-message-123',
         timestamp: Math.floor(Date.now() / 1000)

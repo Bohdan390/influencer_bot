@@ -13,7 +13,7 @@ const instagramDMVariants = {
       name: 'Brand Ambassador Focused',
       message: `Hey {{first_name}}! 👋
 
-We think you're a great fit for our brand Dermao which is launching a new premium IPL hair laser next month! 
+We think you're a great fit for our brand Cosara which is launching a new premium IPL hair laser next month! 
 
 We'd love to send you our newly developed product for free in exchange for a post and the potential to become a brand ambassador if the content is up to par with our expectations.
 
@@ -30,7 +30,7 @@ Would you be interested in this partnership? 💜✨`,
 
 Just came across your content and absolutely love your aesthetic! Your posts are stunning ✨
 
-I'm reaching out from Dermao - we're launching a premium IPL hair laser next month and think you'd be perfect to showcase it. 
+I'm reaching out from Cosara - we're launching a premium IPL hair laser next month and think you'd be perfect to showcase it. 
 
 We'd love to send you the device (worth $299) for free in exchange for authentic content about your experience. Interested in becoming a brand partner? 🤍`,
       category: 'compliment_based',
@@ -45,7 +45,7 @@ We'd love to send you the device (worth $299) for free in exchange for authentic
 
 Loved your recent story! 💫 
 
-Quick question - have you ever tried IPL hair removal? We're Dermao and we're about to launch our new premium device next month.
+Quick question - have you ever tried IPL hair removal? We're Cosara and we're about to launch our new premium device next month.
 
 We think you'd be an amazing fit to try it out and share your honest experience with your followers. The device is worth $299 but we'd send it completely free!
 
@@ -60,7 +60,7 @@ Would you be up for a potential brand collaboration? 🌟`,
       name: 'Value Proposition Focus',
       message: `Hi {{first_name}}! 👋
 
-Hope you're doing amazing! I'm reaching out from Dermao about an exciting opportunity.
+Hope you're doing amazing! I'm reaching out from Cosara about an exciting opportunity.
 
 We're launching our new premium IPL hair laser device next month (retail value $299) and we think you'd be the perfect person to showcase the results! 
 
@@ -82,7 +82,7 @@ Interested in learning more? 💜`,
       name: 'Gentle Follow-up',
       message: `Hey {{first_name}}! 👋
 
-Just wanted to follow up on my previous message about the Dermao IPL collaboration.
+Just wanted to follow up on my previous message about the Cosara IPL collaboration.
 
 No pressure at all - I know you probably get tons of messages! But if you're interested in trying our premium hair laser device for free, I'd love to chat more about the details.
 
@@ -96,7 +96,7 @@ Let me know if this sounds like something you'd be into! 💜`,
       name: 'Urgency Follow-up',
       message: `Hi {{first_name}}! ✨
 
-Hope you're having a great week! I wanted to reach out once more about the Dermao collaboration opportunity.
+Hope you're having a great week! I wanted to reach out once more about the Cosara collaboration opportunity.
 
 We're selecting our launch partners this week for our new IPL device, and I think you'd be perfect for our brand ambassador program.
 
@@ -117,10 +117,10 @@ Would you be interested in learning more about this opportunity? Happy to answer
 
 Here's what happens next:
 • I'll need your shipping address and phone number
-• We'll send you the Dermao IPL device (worth $299) for free
+• We'll send you the Cosara IPL device (worth $299) for free
 • Once you receive it, test it out for 2-3 weeks
 • Create one authentic post about your experience
-• Tag @dermao.official and use #DermaoPartner
+• Tag @cosara.official and use #DermaoPartner
 
 The results are incredible - you're going to love it! Can you send me your shipping details? 📦💜`,
       category: 'positive_response',
@@ -130,7 +130,7 @@ The results are incredible - you're going to love it! Can you send me your shipp
     variant_b_professional: {
       id: 'dm_professional_response',
       name: 'Professional Response', 
-      message: `Wonderful! I'm thrilled you're interested in partnering with Dermao! ✨
+      message: `Wonderful! I'm thrilled you're interested in partnering with Cosara! ✨
 
 To get your IPL device shipped out, I'll need:
 📍 Full shipping address 
@@ -139,7 +139,7 @@ To get your IPL device shipped out, I'll need:
 Once you receive the device:
 • Test it for 2-3 weeks to see the amazing results
 • Create authentic content about your experience  
-• Tag @dermao.official and use #DermaoPartner
+• Tag @cosara.official and use #DermaoPartner
 • If the content meets our standards, potential for ongoing collaboration
 
 Sound good? Send over those shipping details when you're ready! 💜`,
@@ -157,7 +157,7 @@ Sound good? Send over those shipping details when you're ready! 💜`,
       name: 'Shipping Cost Response',
       message: `No worries about shipping! We cover all shipping costs - the device comes completely free to you including delivery! 📦
 
-The Dermao IPL is worth $299 retail and we handle everything. You just need to:
+The Cosara IPL is worth $299 retail and we handle everything. You just need to:
 • Provide shipping address
 • Test the device for 2-3 weeks  
 • Share one authentic post about your results
@@ -184,7 +184,7 @@ The important thing is authentic content about your real experience. When would 
       name: 'Payment Clarification',
       message: `Just to clarify - this is a gifted collaboration! 🎁
 
-You receive the Dermao IPL device (worth $299) completely free - no payment required from you. We're looking for authentic content in exchange for the free product.
+You receive the Cosara IPL device (worth $299) completely free - no payment required from you. We're looking for authentic content in exchange for the free product.
 
 If your content aligns with our brand standards, there could be opportunities for paid partnerships in the future!
 
@@ -272,7 +272,7 @@ const dmHelpers = {
 // =====================================
 const instagramSplitTestConfigs = {
   dermao_launch_campaign: {
-    name: 'Dermao IPL Launch - Instagram DM Test',
+    name: 'Cosara IPL Launch - Instagram DM Test',
     variants: [
       'dm_brand_focused',
       'dm_compliment_first', 

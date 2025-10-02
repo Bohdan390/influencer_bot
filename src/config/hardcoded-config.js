@@ -17,7 +17,7 @@ const hardcodedConfig = {
       provider: 'brevo',
       brevo_api_key: process.env.BREVO_API_KEY,
       from_email: 'bohdanmotrych8@gmail.com',
-      from_name: 'Dermao Partnership Team'
+      from_name: 'Cosara Partnership Team'
     },
 
     // Instagram Discovery - Apify configured
@@ -28,11 +28,11 @@ const hardcodedConfig = {
 
     // Instagram Automation - DM sending
     instagram: {
-      username: 'dermao.beauty',
+      username: 'cosara.beauty',
       password: 'Dermao2024!',
       accounts: [
         {
-          username: 'dermao.beauty',
+          username: 'cosara.beauty',
           password: 'Dermao2024!',
           priority: 1
         }
@@ -62,7 +62,7 @@ const hardcodedConfig = {
   // Campaign Defaults
   campaign: {
     default_product: {
-      name: 'Dermao IPL Hair Laser',
+      name: 'Cosara IPL Hair Laser',
       type: 'Beauty Device',
       description: 'Revolutionary at-home IPL hair removal device that delivers professional salon results',
       value: 299,
@@ -78,7 +78,7 @@ const hardcodedConfig = {
       countries: ['US', 'UK', 'AU'],
       languages: ['en'],
       engagement_rate_min: 2.0,
-      hashtags: 'beauty,skincare,hairremoval,laser,ipl,hairfree,smoothskin,dermao'
+      hashtags: 'beauty,skincare,hairremoval,laser,ipl,hairfree,smoothskin,cosara'
     },
 
     // Outreach Settings (from user_settings.json)
@@ -87,9 +87,9 @@ const hardcodedConfig = {
       response_timeout_hours: 120, // 5 days
       max_follow_ups: 2,
       auto_ship_threshold: 0.8,
-      sender_name: 'Dermao Partnership Team',
+      sender_name: 'Cosara Partnership Team',
       sender_email: 'influencers@trycosara.com',
-      signature: 'Best regards,\nDermao Partnership Team\nBeauty Technology Innovation\n\n--\nDermao IPL Hair Removal\nwww.dermao.com | @dermao.official'
+      signature: 'Best regards,\nDermao Partnership Team\nBeauty Technology Innovation\n\n--\nDermao IPL Hair Removal\nwww.cosara.com | @cosara.official'
     }
   },
 

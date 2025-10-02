@@ -37,10 +37,10 @@ const SettingsPage = () => {
   });
 
   const [emailSettings, setEmailSettings] = useState({
-    sender_name: 'Dermao Team',
+    sender_name: 'Cosara Team',
           sender_email: 'influencers@trycosara.com',
-    reply_to: 'hello@dermao.com',
-    signature: 'Best regards,\nThe Dermao Team\n\n--\nDermao IPL Hair Removal\nwww.dermao.com'
+    reply_to: 'hello@cosara.com',
+    signature: 'Best regards,\nThe Cosara Team\n\n--\nDermao IPL Hair Removal\nwww.cosara.com'
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -150,7 +150,7 @@ const SettingsPage = () => {
           break;
         case 'brevo':
           endpoint = '/api/campaigns/test/email';
-          payload = { to: 'test@dermao.com', template: 'initial_outreach', data: { first_name: 'Test' } };
+          payload = { to: 'test@cosara.com', template: 'initial_outreach', data: { first_name: 'Test' } };
           break;
         case 'shopify':
           endpoint = '/api/campaigns/test/shopify';
@@ -446,7 +446,7 @@ const SettingsPage = () => {
                 <Label htmlFor="sender_name">Sender Name</Label>
                 <Input 
                   id="sender_name" 
-                  placeholder="Dermao Team"
+                  placeholder="Cosara Team"
                   value={emailSettings.sender_name}
                   onChange={(e) => setEmailSettings(prev => ({ ...prev, sender_name: e.target.value }))}
                 />
@@ -466,7 +466,7 @@ const SettingsPage = () => {
                 <Label htmlFor="reply_to">Reply-To Email</Label>
                 <Input 
                   id="reply_to" 
-                  placeholder="hello@dermao.com"
+                  placeholder="hello@cosara.com"
                   value={emailSettings.reply_to}
                   onChange={(e) => setEmailSettings(prev => ({ ...prev, reply_to: e.target.value }))}
                 />
@@ -476,7 +476,7 @@ const SettingsPage = () => {
                 <Label htmlFor="signature">Email Signature</Label>
                 <Textarea 
                   id="signature"
-                  placeholder="Best regards,&#10;The Dermao Team&#10;&#10;--&#10;Dermao IPL Hair Removal&#10;www.dermao.com"
+                  placeholder="Best regards,&#10;The Cosara Team&#10;&#10;--&#10;Cosara IPL Hair Removal&#10;www.cosara.com"
                   rows={4}
                   value={emailSettings.signature}
                   onChange={(e) => setEmailSettings(prev => ({ ...prev, signature: e.target.value }))}

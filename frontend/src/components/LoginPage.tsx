@@ -23,7 +23,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
     password: "",
     confirmPassword: "",
     full_name: "",
-    company: "Dermao"
+    company: "Cosara"
   });
   
   const [error, setError] = useState("");
@@ -129,7 +129,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
           </div>
           <div>
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Dermao Influencer Hub
+              Cosara Influencer Hub
             </CardTitle>
             <CardDescription>
               Access your influencer marketing platform

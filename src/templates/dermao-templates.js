@@ -1,11 +1,11 @@
-// Email Templates for Dermao IPL Hair Laser Campaign
+// Email Templates for Cosara IPL Hair Laser Campaign
 // Adapted for brand ambassador test approach
 
 const emailTemplates = {
   
   // 1) INITIAL OUTREACH - Brand Ambassador Test Invitation
   initial_outreach: {
-    subject: "Brand Ambassador Opportunity with Dermao",
+    subject: "Brand Ambassador Opportunity with Cosara",
     html: `<!DOCTYPE html>
 <html>
   <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 16px; color: #000000; background-color: #ffffff;">
@@ -14,7 +14,7 @@ const emailTemplates = {
         <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          I'm reaching out on behalf of <strong>Dermao</strong> — a revolutionary beauty tech brand that's changing how people approach hair removal. We help people everywhere achieve smooth, confident skin without the hassle of constant shaving or expensive salon visits.
+          I'm reaching out on behalf of <strong>Cosara</strong> — a revolutionary beauty tech brand that's changing how people approach hair removal. We help people everywhere achieve smooth, confident skin without the hassle of constant shaving or expensive salon visits.
         </p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -49,15 +49,15 @@ const emailTemplates = {
         </p>
         
         <p style="margin: 0 0 8px 0; line-height: 1.5;">Best regards,</p>
-        <p style="margin: 0 0 16px 0; line-height: 1.5;">The Dermao Partnership Team</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">The Cosara Partnership Team</p>
         
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
           <tr><td>
             <p style="margin: 0; line-height: 1.5;">
-              <strong>Dermao</strong><br>
+              <strong>Cosara</strong><br>
               Beauty Technology Innovation<br>
-              <a href="https://dermao.com" target="_blank" style="color: #000000; text-decoration: underline;">dermao.com</a> | 
-              <a href="https://instagram.com/dermao.official" target="_blank" style="color: #000000; text-decoration: underline;">@dermao.official</a>
+              <a href="https://cosara.com" target="_blank" style="color: #000000; text-decoration: underline;">cosara.com</a> | 
+              <a href="https://instagram.com/cosara.official" target="_blank" style="color: #000000; text-decoration: underline;">@cosara.official</a>
             </p>
           </td></tr>
         </table>
@@ -78,7 +78,7 @@ const emailTemplates = {
         <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          Amazing! I'm thrilled that you're interested in becoming a Dermao brand ambassador. I can't wait to see your authentic content featuring our IPL technology!
+          Amazing! I'm thrilled that you're interested in becoming a Cosara brand ambassador. I can't wait to see your authentic content featuring our IPL technology!
         </p>
 
         <p style="margin: 0 0 8px 0; line-height: 1.5;">To get your <strong>free IPL Hair Laser</strong> (worth $299) shipped to you, I just need your shipping details:</p>
@@ -99,7 +99,7 @@ const emailTemplates = {
           <li style="margin-bottom: 8px;">Your unboxing experience</li>
           <li style="margin-bottom: 8px;">First impressions and setup</li>
           <li style="margin-bottom: 8px;">Your honest results after use</li>
-          <li style="margin-bottom: 8px;">Please tag us: <strong>@dermao.official</strong> so we can see and share your content!</li>
+          <li style="margin-bottom: 8px;">Please tag us: <strong>@cosara.official</strong> so we can see and share your content!</li>
         </ul>
 
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -111,10 +111,10 @@ const emailTemplates = {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
           <tr><td>
             <p style="margin: 0; line-height: 1.5;">
-              <strong>Dermao Partnership Team</strong><br>
+              <strong>Cosara Partnership Team</strong><br>
               Beauty Technology Innovation<br>
-              <a href="https://dermao.com" target="_blank" style="color: #000000; text-decoration: underline;">dermao.com</a> | 
-              <a href="https://instagram.com/dermao.official" target="_blank" style="color: #000000; text-decoration: underline;">@dermao.official</a>
+              <a href="https://cosara.com" target="_blank" style="color: #000000; text-decoration: underline;">cosara.com</a> | 
+              <a href="https://instagram.com/cosara.official" target="_blank" style="color: #000000; text-decoration: underline;">@cosara.official</a>
             </p>
           </td></tr>
         </table>
@@ -142,7 +142,7 @@ const emailTemplates = {
         
         <ul style="margin: 0 0 16px 20px; padding: 0; line-height: 1.5;">
           <li style="margin-bottom: 8px;">Share an Instagram post or Reel showcasing your experience with the IPL device</li>
-          <li style="margin-bottom: 8px;">Tag us <strong>@dermao.official</strong> so we can see and share your content</li>
+          <li style="margin-bottom: 8px;">Tag us <strong>@cosara.official</strong> so we can see and share your content</li>
           <li style="margin-bottom: 8px;">Be honest about your experience — authenticity is what we value most!</li>
         </ul>
 
@@ -159,10 +159,10 @@ const emailTemplates = {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
           <tr><td>
             <p style="margin: 0; line-height: 1.5;">
-              <strong>Dermao Partnership Team</strong><br>
+              <strong>Cosara Partnership Team</strong><br>
               Beauty Technology Innovation<br>
-              <a href="https://dermao.com" target="_blank" style="color: #000000; text-decoration: underline;">dermao.com</a> | 
-              <a href="https://instagram.com/dermao.official" target="_blank" style="color: #000000; text-decoration: underline;">@dermao.official</a>
+              <a href="https://cosara.com" target="_blank" style="color: #000000; text-decoration: underline;">cosara.com</a> | 
+              <a href="https://instagram.com/cosara.official" target="_blank" style="color: #000000; text-decoration: underline;">@cosara.official</a>
             </p>
           </td></tr>
         </table>
@@ -174,7 +174,7 @@ const emailTemplates = {
 
   // 4) ASK FOR BOTH - Initial response when neither address nor consent provided
   ask_for_both: {
-    subject: "Your Dermao Brand Ambassador Test Details",
+    subject: "Your Cosara Brand Ambassador Test Details",
     html: `<!DOCTYPE html>
 <html>
   <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 16px; color: #000000; background-color: #ffffff;">
@@ -183,7 +183,7 @@ const emailTemplates = {
         <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          Thanks for your interest in collaborating with Dermao! We're excited about the possibility of working together.
+          Thanks for your interest in collaborating with Cosara! We're excited about the possibility of working together.
         </p>
 
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -215,10 +215,10 @@ const emailTemplates = {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
           <tr><td>
             <p style="margin: 0; line-height: 1.5;">
-              <strong>Dermao Partnership Team</strong><br>
+              <strong>Cosara Partnership Team</strong><br>
               Beauty Technology Innovation<br>
-              <a href="https://dermao.com" target="_blank" style="color: #000000; text-decoration: underline;">dermao.com</a> | 
-              <a href="https://instagram.com/dermao.official" target="_blank" style="color: #000000; text-decoration: underline;">@dermao.official</a>
+              <a href="https://cosara.com" target="_blank" style="color: #000000; text-decoration: underline;">cosara.com</a> | 
+              <a href="https://instagram.com/cosara.official" target="_blank" style="color: #000000; text-decoration: underline;">@cosara.official</a>
             </p>
           </td></tr>
         </table>
@@ -247,7 +247,7 @@ const emailTemplates = {
         <ul style="margin: 0 0 16px 20px; padding: 0; line-height: 1.5;">
           <li style="margin-bottom: 8px;">1x authentic post or Reel featuring your IPL experience</li>
           <li style="margin-bottom: 8px;">Your honest thoughts on the device and results</li>
-          <li style="margin-bottom: 8px;">Please tag us <strong>@dermao.official</strong> so we can share your amazing content!</li>
+          <li style="margin-bottom: 8px;">Please tag us <strong>@cosara.official</strong> so we can share your amazing content!</li>
         </ul>
 
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -267,10 +267,10 @@ const emailTemplates = {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
           <tr><td>
             <p style="margin: 0; line-height: 1.5;">
-              <strong>Dermao Partnership Team</strong><br>
+              <strong>Cosara Partnership Team</strong><br>
               Beauty Technology Innovation<br>
-              <a href="https://dermao.com" target="_blank" style="color: #000000; text-decoration: underline;">dermao.com</a> | 
-              <a href="https://instagram.com/dermao.official" target="_blank" style="color: #000000; text-decoration: underline;">@dermao.official</a>
+              <a href="https://cosara.com" target="_blank" style="color: #000000; text-decoration: underline;">cosara.com</a> | 
+              <a href="https://instagram.com/cosara.official" target="_blank" style="color: #000000; text-decoration: underline;">@cosara.official</a>
             </p>
           </td></tr>
         </table>
@@ -328,10 +328,10 @@ const emailTemplates = {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
           <tr><td>
             <p style="margin: 0; line-height: 1.5;">
-              <strong>Dermao Partnership Team</strong><br>
+              <strong>Cosara Partnership Team</strong><br>
               Beauty Technology Innovation<br>
-              <a href="https://dermao.com" target="_blank" style="color: #000000; text-decoration: underline;">dermao.com</a> | 
-              <a href="https://instagram.com/dermao.official" target="_blank" style="color: #000000; text-decoration: underline;">@dermao.official</a>
+              <a href="https://cosara.com" target="_blank" style="color: #000000; text-decoration: underline;">cosara.com</a> | 
+              <a href="https://instagram.com/cosara.official" target="_blank" style="color: #000000; text-decoration: underline;">@cosara.official</a>
             </p>
           </td></tr>
         </table>
@@ -343,7 +343,7 @@ const emailTemplates = {
 
   // 7) NON-TARGET COUNTRY RESPONSE
   non_target_country: {
-    subject: "Thank you for your interest in Dermao",
+    subject: "Thank you for your interest in Cosara",
     html: `<!DOCTYPE html>
 <html>
   <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 16px; color: #000000; background-color: #ffffff;">
@@ -352,7 +352,7 @@ const emailTemplates = {
         <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
         
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          Thank you so much for your interest in becoming a Dermao brand ambassador! I really appreciate you reaching out to us and I love your content.
+          Thank you so much for your interest in becoming a Cosara brand ambassador! I really appreciate you reaching out to us and I love your content.
         </p>
 
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
@@ -364,7 +364,7 @@ const emailTemplates = {
         </p>
 
         <p style="margin: 0 0 16px 0; line-height: 1.5;">
-          In the meantime, please feel free to follow us at <a href="https://instagram.com/dermao.official" target="_blank" style="color: #263376; text-decoration: underline;">@dermao.official</a> to stay updated on our product launches, expansion plans, and future collaboration opportunities.
+          In the meantime, please feel free to follow us at <a href="https://instagram.com/cosara.official" target="_blank" style="color: #263376; text-decoration: underline;">@cosara.official</a> to stay updated on our product launches, expansion plans, and future collaboration opportunities.
         </p>
 
         <p style="margin: 0 0 24px 0; line-height: 1.5;">Thank you again for your interest, and I hope we can work together when we expand to your region!</p>
@@ -372,10 +372,10 @@ const emailTemplates = {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
           <tr><td>
             <p style="margin: 0; line-height: 1.5;">
-              <strong>Dermao Partnership Team</strong><br>
+              <strong>Cosara Partnership Team</strong><br>
               Beauty Technology Innovation<br>
-              <a href="https://dermao.com" target="_blank" style="color: #000000; text-decoration: underline;">dermao.com</a> | 
-              <a href="https://instagram.com/dermao.official" target="_blank" style="color: #000000; text-decoration: underline;">@dermao.official</a>
+              <a href="https://cosara.com" target="_blank" style="color: #000000; text-decoration: underline;">cosara.com</a> | 
+              <a href="https://instagram.com/cosara.official" target="_blank" style="color: #000000; text-decoration: underline;">@cosara.official</a>
             </p>
           </td></tr>
         </table>

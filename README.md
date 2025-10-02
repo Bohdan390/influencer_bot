@@ -1,6 +1,6 @@
-# 🚀 Dermao Influencer Marketing Bot
+# 🚀 Cosara Influencer Marketing Bot
 
-**Fully automated influencer marketing system** for Dermao's IPL hair laser campaigns. This system handles the complete workflow from discovery to content tracking.
+**Fully automated influencer marketing system** for Cosara's IPL hair laser campaigns. This system handles the complete workflow from discovery to content tracking.
 
 ## ✨ Features
 

@@ -210,12 +210,12 @@ class FollowUpScheduler {
    */
   getContentReminderTemplate() {
     return {
-      subject: "How's your Dermao experience going? 📸",
+      subject: "How's your Cosara experience going? 📸",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Hi {{first_name}}! 👋</h2>
           
-          <p>I hope you're loving your Dermao IPL device! It's been about a week since we shipped it to you.</p>
+          <p>I hope you're loving your Cosara IPL device! It's been about a week since we shipped it to you.</p>
           
           <p>We'd love to see how your hair removal journey is going! When you're ready, we'd be thrilled if you could share:</p>
           
@@ -232,7 +232,7 @@ class FollowUpScheduler {
           <p>Looking forward to seeing your content! 🌟</p>
           
           <p>Best,<br>
-          The Dermao Team</p>
+          The Cosara Team</p>
         </div>
       `
     };
@@ -243,12 +243,12 @@ class FollowUpScheduler {
    */
   getFinalReminderTemplate() {
     return {
-      subject: "Final reminder: Share your Dermao journey 🌟",
+      subject: "Final reminder: Share your Cosara journey 🌟",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Hi {{first_name}},</h2>
           
-          <p>I hope you've been enjoying your Dermao IPL device! It's been about 2 weeks since we sent it your way.</p>
+          <p>I hope you've been enjoying your Cosara IPL device! It's been about 2 weeks since we sent it your way.</p>
           
           <p>This is just a friendly final reminder about creating content for our collaboration. We understand life gets busy, but we'd still love to see your experience with the device!</p>
           
@@ -263,10 +263,10 @@ class FollowUpScheduler {
           
           <p>If you need any help or have questions, I'm here to support you!</p>
           
-          <p>Thanks for being part of the Dermao community! 💜</p>
+          <p>Thanks for being part of the Cosara community! 💜</p>
           
           <p>Best regards,<br>
-          The Dermao Team</p>
+          The Cosara Team</p>
         </div>
       `
     };

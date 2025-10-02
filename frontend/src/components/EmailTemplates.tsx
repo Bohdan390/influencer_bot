@@ -83,7 +83,7 @@ const EmailTemplates = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          to: 'test@dermao.com',
+          to: 'test@cosara.com',
           template: template.name,
           data: { first_name: 'Sarah', tracking_number: 'TRK123456' }
         })

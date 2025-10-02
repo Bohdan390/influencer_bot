@@ -305,7 +305,7 @@ router.get('/stats', async (req, res) => {
 
     // Get account health info (simplified without Instagram service dependency)
     const accountsHealth = [{
-      username: process.env.INSTAGRAM_USERNAME || 'dermao.beauty',
+      username: process.env.INSTAGRAM_USERNAME || 'cosara.beauty',
       status: 'healthy',
       daily_limit: 40,
       sent_today: dmStats.today_sent || 0,

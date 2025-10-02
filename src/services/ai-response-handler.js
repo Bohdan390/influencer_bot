@@ -62,7 +62,7 @@ class AIResponseHandler {
       : 'No previous conversation history';
 
     return `
-You are an AI assistant for Dermao's influencer marketing campaign. Analyze this email response and decide the next action based on full conversation context.
+You are an AI assistant for Cosara's influencer marketing campaign. Analyze this email response and decide the next action based on full conversation context.
 
 INFLUENCER PROFILE:
 - Handle: ${influencerData.instagram_handle}
@@ -152,11 +152,11 @@ Respond with JSON:
     // Simple template-based fallback for common prompts
     if (prompt.includes('personalized outreach') || prompt.includes('outreach')) {
       return JSON.stringify({
-        subject: "Exciting Partnership Opportunity with Dermao!",
+        subject: "Exciting Partnership Opportunity with Cosara!",
         html: `
           <p>Hi there!</p>
-          <p>I hope this message finds you well! I'm reaching out from Dermao, and I'm excited to share an amazing partnership opportunity with you.</p>
-          <p>We're offering influencers like yourself a free Dermao IPL Hair Laser device (valued at $299) in exchange for authentic content creation. This revolutionary at-home hair removal device delivers professional salon results.</p>
+          <p>I hope this message finds you well! I'm reaching out from Cosara, and I'm excited to share an amazing partnership opportunity with you.</p>
+          <p>We're offering influencers like yourself a free Cosara IPL Hair Laser device (valued at $299) in exchange for authentic content creation. This revolutionary at-home hair removal device delivers professional salon results.</p>
           <p>What we're looking for:</p>
           <ul>
             <li>Authentic content showcasing the device</li>
@@ -164,14 +164,14 @@ Respond with JSON:
             <li>Engagement with your audience about the product</li>
           </ul>
           <p>If you're interested, please let me know and I'll provide more details about the partnership!</p>
-          <p>Best regards,<br>Dermao Partnership Team</p>
+          <p>Best regards,<br>Cosara Partnership Team</p>
         `,
         text: `
           Hi there!
           
-          I hope this message finds you well! I'm reaching out from Dermao, and I'm excited to share an amazing partnership opportunity with you.
+          I hope this message finds you well! I'm reaching out from Cosara, and I'm excited to share an amazing partnership opportunity with you.
           
-          We're offering influencers like yourself a free Dermao IPL Hair Laser device (valued at $299) in exchange for authentic content creation. This revolutionary at-home hair removal device delivers professional salon results.
+          We're offering influencers like yourself a free Cosara IPL Hair Laser device (valued at $299) in exchange for authentic content creation. This revolutionary at-home hair removal device delivers professional salon results.
           
           What we're looking for:
           - Authentic content showcasing the device
@@ -181,7 +181,7 @@ Respond with JSON:
           If you're interested, please let me know and I'll provide more details about the partnership!
           
           Best regards,
-          Dermao Partnership Team
+          Cosara Partnership Team
         `
       });
     }
@@ -840,8 +840,8 @@ Respond with JSON:
           <p>Looking forward to hearing from you!</p>
           
           <p>Best regards,<br>
-          <strong>Dermao Partnership Team</strong><br>
-          partnership@dermao.com</p>
+          <strong>Cosara Partnership Team</strong><br>
+          partnership@cosara.com</p>
         </div>
       `,
       text: `Hi ${name}!
@@ -861,8 +861,8 @@ We're currently shipping to the US, UK, and Australia. If you're interested in l
 Looking forward to hearing from you!
 
 Best regards,
-Dermao Partnership Team
-partnership@dermao.com`,
+Cosara Partnership Team
+partnership@cosara.com`,
       personalization_notes: 'Fallback template with basic personalization'
     };
   }

@@ -8,7 +8,7 @@ import { Loader2, Send, Sparkles, Target, Hash, Users } from 'lucide-react';
 
 const SimpleProductForm = () => {
   const [formData, setFormData] = useState({
-    productName: 'Dermao IPL Hair Laser',
+    productName: 'Cosara IPL Hair Laser',
     productType: 'Beauty Device',
     description: 'Revolutionary at-home IPL hair removal device that delivers professional salon results',
     influencerCount: '50',
@@ -116,7 +116,7 @@ const SimpleProductForm = () => {
             <Input
               value={formData.productName}
               onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
-              placeholder="e.g., Dermao IPL Hair Laser"
+              placeholder="e.g., Cosara IPL Hair Laser"
               className="w-full"
             />
           </div>

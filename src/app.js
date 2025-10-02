@@ -18,6 +18,7 @@ const authRouter = require('./routes/auth');
 const instagramRouter = require('./routes/instagram');
 const emailCampaignsRouter = require('./routes/email-campaigns');
 const slackEvents = require('./routes/slack-events');
+const imagesRouter = require('./routes/images');
 
 // Import services
 const { initializeSupabase, createDefaultUser } = require('./services/database');
@@ -35,7 +36,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
       connectSrc: ["'self'", "ws:", "wss:"],
       fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
@@ -196,7 +197,7 @@ app.get('/api/setup/database', async (req, res) => {
 // API Root endpoint
 app.get('/api', (req, res) => {
   res.json({
-    message: 'Dermao Influencer Marketing Bot API',
+    message: 'Cosara Influencer Marketing Bot API',
     version: '1.0.0',
     status: 'fully_operational',
     setup_needed: !supabaseInitialized,
@@ -230,7 +231,7 @@ app.get('/setup', (req, res) => {
   }
   
   res.json({
-    message: 'Setup Guide for Dermao Influencer Marketing Bot',
+    message: 'Setup Guide for Cosara Influencer Marketing Bot',
     status: missingServices.length === 0 ? 'complete' : 'incomplete',
     missing_services: missingServices,
     setup_instructions: {
@@ -296,6 +297,7 @@ app.use('/api/webhooks', webhooksRouter);
 app.use('/api/campaigns', campaignsRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/setup', setupRouter);
+app.use('/api/images', imagesRouter);
 app.use('/api/instagram', instagramRouter);
 app.use('/api/email-campaigns', emailCampaignsRouter);
 app.use('/api/split-tests', require('./routes/split-tests')); // ✨ NEW: Split testing routes

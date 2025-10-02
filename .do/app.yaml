@@ -1,4 +1,4 @@
-name: dermao-influencer-connect
+name: cosara-influencer-connect
 services:
 - name: api
   source_dir: /
@@ -30,7 +30,7 @@ services:
     type: SECRET
   - key: FROM_EMAIL
   - key: FROM_NAME
-    value: Dermao Partnership Team
+    value: Cosara Partnership Team
   - key: EMAIL_PROVIDER
     value: brevo
   - key: APIFY_API_TOKEN
@@ -48,7 +48,7 @@ services:
   - key: CAMPAIGN_HASHTAG
     value: "#DermaoPartner"
   - key: BRAND_INSTAGRAM
-    value: "@dermao.official"
+    value: "@cosara.official"
   - key: GEMINI_API_KEY
     type: SECRET
   - key: AI_PROVIDER
@@ -58,7 +58,7 @@ services:
   - key: SUPABASE_ANON_KEY
     type: SECRET
   - key: VITE_API_BASE_URL
-    value: "https://dermao-influencer-connect-xxxxx.ondigitalocean.app"
+    value: "https://cosara-influencer-connect-xxxxx.ondigitalocean.app"
   - key: PUPPETEER_CACHE_DIR
     value: "/workspace/.cache/puppeteer"
   - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD

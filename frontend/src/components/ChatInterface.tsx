@@ -14,6 +14,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { useWebSocket, useChatListener } from '../contexts/WebSocketContext';
+import { getProxiedImageUrl } from '@/utils/imageProxy';
 
 interface ChatMessage {
   id: string;
@@ -115,8 +116,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         body: JSON.stringify({
           message: newMessage.trim(),
           senderType: 'user',
-          senderName: 'Dermao Team',
-          senderEmail: 'team@dermao.com',
+          senderName: 'Cosara Team',
+          senderEmail: 'team@cosara.com',
           messageType: 'text',
           influencerId: influencerId,
           metadata: {
@@ -194,10 +195,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const getSenderAvatar = (message: ChatMessage) => {
     if (message.sender_type === 'influencer' && message.influencers?.profile_image) {
-      return message.influencers.profile_image;
+      return getProxiedImageUrl(message.influencers.profile_image);
     }
     if (message.sender_type === 'influencer' && influencerImage) {
-      return influencerImage;
+      return getProxiedImageUrl(influencerImage);
     }
     return undefined;
   };

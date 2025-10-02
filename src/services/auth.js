@@ -9,7 +9,7 @@ const USERS_FILE = path.join(__dirname, '../data/users.json');
 
 class AuthService {
   constructor() {
-    this.jwtSecret = process.env.JWT_SECRET || 'dermao-secret-key-change-in-production';
+    this.jwtSecret = process.env.JWT_SECRET || 'cosara-secret-key-change-in-production';
     this.jwtExpiry = process.env.JWT_EXPIRY || '7d';
     this.useSupabase = false;
     this.db = null;
@@ -56,7 +56,7 @@ class AuthService {
    */
   async createUser(userData) {
     try {
-      const { email, password, full_name, company = 'Dermao' } = userData;
+      const { email, password, full_name, company = 'Cosara' } = userData;
 
       // Check if user already exists
       const existingUser = await this.getUserByEmail(email);
@@ -330,7 +330,7 @@ class AuthService {
 
     return jwt.sign(payload, this.jwtSecret, { 
       expiresIn: this.jwtExpiry,
-      issuer: 'dermao-influencer-hub'
+      issuer: 'cosara-influencer-hub'
     });
   }
 
@@ -407,12 +407,12 @@ class AuthService {
       if (!hasUsers) {
         console.log('📝 Creating default admin user...');
         await this.createUser({
-          email: 'admin@dermao.com',
+          email: 'admin@cosara.com',
           password: 'DermaoAdmin123!',
-          full_name: 'Dermao Administrator',
-          company: 'Dermao'
+          full_name: 'Cosara Administrator',
+          company: 'Cosara'
         });
-        console.log('✅ Default admin user created: admin@dermao.com / DermaoAdmin123!');
+        console.log('✅ Default admin user created: admin@cosara.com / DermaoAdmin123!');
       }
     } catch (error) {
       console.log('⚠️ Could not create default user:', error.message);
@@ -533,10 +533,10 @@ class AuthService {
         followup_delay_days: 3
       },
       email_settings: {
-        sender_name: 'Dermao Team',
+        sender_name: 'Cosara Team',
         sender_email: 'influencers@trycosara.com',
-        reply_to: 'hello@dermao.com',
-        signature: 'Best regards,\nThe Dermao Team\n\n--\nDermao IPL Hair Removal\nwww.dermao.com'
+        reply_to: 'hello@cosara.com',
+        signature: 'Best regards,\nThe Cosara Team\n\n--\nDermao IPL Hair Removal\nwww.cosara.com'
       },
       created_at: new Date(),
       updated_at: new Date()

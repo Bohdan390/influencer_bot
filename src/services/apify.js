@@ -114,7 +114,7 @@ class ApifyService {
 			// Use the official Apify Instagram Hashtag Scraper with diversity settings
 			const run = await client.actor(INSTAGRAM_HASHTAG_SCRAPER_ID).call({
 				hashtags: cleanedHashtags,
-				resultsLimit: limit * 3, // Get 3x more posts to find diverse influencers
+				resultsLimit: limit, // Get 3x more posts to find diverse influencers
 				resultsType: 'posts', // Get posts instead of just top posts
 				searchType: 'recent', // Get recent posts instead of top posts
 				includeLocationData: true,

@@ -18,7 +18,7 @@ import { API_BASE, getApiUrl } from "../utils/api";
 const CampaignLauncher = () => {
   const [campaignData, setCampaignData] = useState({
     outreachType: 'email',
-    hashtags: '#beauty #skincare #hairremoval #laser #dermao',
+    hashtags: '#beauty #skincare #hairremoval #laser #cosara',
     targetCount: 50,
     minFollowers: 10000,
     maxFollowers: 100000,
@@ -319,6 +319,10 @@ const CampaignLauncher = () => {
       </Card>
 
       {/* Discovery & Targeting Configuration */}
+      
+
+      {/* Campaign Configuration */}
+      <div className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>Discovery & Targeting</CardTitle>
@@ -364,7 +368,7 @@ const CampaignLauncher = () => {
               <Label htmlFor="hashtags">Custom Hashtags</Label>
               <Textarea
                 id="hashtags"
-                placeholder="#beauty #skincare #hairremoval #laser #dermao"
+                placeholder="#beauty #skincare #hairremoval #laser #cosara"
                 value={campaignData.hashtags}
                 onChange={(e) => setCampaignData(prev => ({ ...prev, hashtags: e.target.value }))}
                 rows={3}
@@ -380,10 +384,6 @@ const CampaignLauncher = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Campaign Configuration */}
-      <div className="grid gap-6 lg:grid-cols-2">
-
         {/* Target Settings */}
         <Card>
           <CardHeader>
@@ -434,32 +434,11 @@ const CampaignLauncher = () => {
                 </div>
               </div>
             </div>
-
-            {/* NEW: Split Testing Option */}
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="enableSplitTest"
-                checked={campaignData.enableSplitTest}
-                onChange={(e) => setCampaignData(prev => ({ ...prev, enableSplitTest: e.target.checked }))}
-                className="rounded border-gray-300"
-              />
-              <Label htmlFor="enableSplitTest" className="text-sm font-medium">
-                🧪 Enable A/B Split Testing
-              </Label>
-            </div>
-            {campaignData.enableSplitTest && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-700">
-                  Split testing will automatically test different message variants and find the best performer.
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
 
         {/* Template Selection */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Message Template</CardTitle>
             <CardDescription>Choose your outreach message template</CardDescription>
@@ -518,7 +497,7 @@ const CampaignLauncher = () => {
               />
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Launch Section */}

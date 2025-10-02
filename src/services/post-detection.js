@@ -6,7 +6,7 @@
 class PostDetectionService {
   constructor() {
     this.brandKeywords = [
-      'dermao', '@dermao.official', '#dermaopartner', 
+      'cosara', '@cosara.official', '#dermaopartner', 
       'ipl', 'hair removal', 'laser hair removal'
     ];
     this.monitoringQueue = [];
@@ -299,7 +299,7 @@ class PostDetectionService {
         id: `post_${Date.now()}_${i}`,
         url: `https://instagram.com/p/${Math.random().toString(36).substr(2, 11)}`,
         caption: isBrandPost 
-          ? `Loving my new @dermao.official IPL device! 🔥 #dermaopartner #hairremoval #beauty`
+          ? `Loving my new @cosara.official IPL device! 🔥 #dermaopartner #hairremoval #beauty`
           : `Just another day in paradise ☀️ #lifestyle #mood`,
         timestamp: postDate.toISOString(),
         likes: Math.floor(Math.random() * 1000) + 100,
@@ -309,7 +309,7 @@ class PostDetectionService {
         hashtags: isBrandPost 
           ? ['dermaopartner', 'hairremoval', 'beauty', 'ipl']
           : ['lifestyle', 'mood', 'daily'],
-        mentions: isBrandPost ? ['@dermao.official'] : [],
+        mentions: isBrandPost ? ['@cosara.official'] : [],
         location: null
       };
       
@@ -365,7 +365,7 @@ class PostDetectionService {
     }
     
     // Check for brand hashtags
-    const brandHashtags = ['dermaopartner', 'dermao'];
+    const brandHashtags = ['dermaopartner', 'cosara'];
     for (const hashtag of brandHashtags) {
       if (hashtags.includes(hashtag)) {
         score += 0.4;
@@ -374,7 +374,7 @@ class PostDetectionService {
     }
     
     // Check for brand mentions
-    const brandMentions = ['@dermao.official', '@dermao'];
+    const brandMentions = ['@cosara.official', '@cosara'];
     for (const mention of brandMentions) {
       if (mentions.includes(mention.toLowerCase())) {
         score += 0.5;
@@ -420,7 +420,7 @@ class PostDetectionService {
     // Check if brand is tagged
     if (requirements.must_tag_brand) {
       const hasBrandTag = mentions.some(mention => 
-        mention.includes('dermao') || mention.includes('@dermao.official')
+        mention.includes('cosara') || mention.includes('@cosara.official')
       );
       
       if (!hasBrandTag) {
@@ -577,11 +577,11 @@ class PostDetectionService {
    */
   checkBrandMention(post) {
     const brandMentions = [
-      '@dermao.official',
-      '@dermao',
-      '#dermao',
+      '@cosara.official',
+      '@cosara',
+      '#cosara',
       '#dermaopartner',
-      'dermao',
+      'cosara',
       '@dermao_official'
     ];
     
