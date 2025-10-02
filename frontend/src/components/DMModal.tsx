@@ -41,6 +41,8 @@ interface DMModalProps {
   }) => Promise<void>;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 const DMModal: React.FC<DMModalProps> = ({
   isOpen,
   onClose,
@@ -68,7 +70,7 @@ const DMModal: React.FC<DMModalProps> = ({
 
     setIsGenerating(true);
     try {
-      const response = await fetch('http://localhost:3000/api/ai/generate-message', {
+      const response = await fetch(`${API_BASE}/api/ai/generate-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

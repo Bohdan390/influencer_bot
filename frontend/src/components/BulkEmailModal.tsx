@@ -36,6 +36,8 @@ interface BulkEmailModalProps {
   }) => Promise<void>;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 const BulkEmailModal: React.FC<BulkEmailModalProps> = ({
   isOpen,
   onClose,
@@ -72,7 +74,7 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({
   const handleGenerateMessage = async () => {
     setIsGenerating(true);
     try {
-      const response = await fetch('http://localhost:3000/api/ai/generate-bulk-message', {
+      const response = await fetch(`${API_BASE}/api/ai/generate-bulk-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
