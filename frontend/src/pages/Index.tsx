@@ -11,6 +11,7 @@ import CampaignLauncher from "@/components/CampaignLauncher";
 import DatabaseView from "@/components/DatabaseView";
 import InstagramConversations from "@/components/InstagramConversations";
 import CampaignsPage from "./CampaignsPage";
+import MessageManager from "@/components/MessageManager";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -93,7 +94,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
+        <div className="maincontainer mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
@@ -111,9 +112,9 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="maincontainer mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-[700px] mx-auto">
+          <TabsList className="grid w-full grid-cols-5 lg:w-[800px] mx-auto">
             <TabsTrigger value="launch" className="flex items-center gap-2">
               <Rocket className="w-4 h-4" />
               Launch
@@ -142,10 +143,10 @@ const Index = () => {
               <Users className="w-4 h-4" />
               Database
             </TabsTrigger>
-            {/* <TabsTrigger value="instagram" className="flex items-center gap-2">
-              <Instagram className="w-4 h-4" />
-              Instagram
-            </TabsTrigger> */}
+            <TabsTrigger value="messages" className="flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Messages
+            </TabsTrigger>
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Dashboard
@@ -160,12 +161,17 @@ const Index = () => {
             <CampaignLauncher />
           </TabsContent>
 
+
           <TabsContent value="campaigns" className="space-y-6">
             <CampaignManager onStatsUpdate={fetchReplyStats} />
           </TabsContent>
 
           <TabsContent value="database" className="space-y-6">
             <DatabaseView />
+          </TabsContent>
+
+          <TabsContent value="messages" className="space-y-6">
+            <MessageManager />
           </TabsContent>
 
           <TabsContent value="instagram" className="space-y-6">

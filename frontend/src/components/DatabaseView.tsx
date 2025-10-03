@@ -60,21 +60,6 @@ const DatabaseView = () => {
     try {
       setLoading(true);
       
-      // Load CRM dashboard stats with timeout
-      try {
-        const statsResponse = await fetch(`${API_BASE}/api/dashboard/crm`, {
-          method: 'GET',
-          signal: AbortSignal.timeout(3000)
-        });
-        if (statsResponse.ok) {
-          const stats = await statsResponse.json();
-          setDashboardStats(stats);
-        }
-      } catch (statsError) {
-        console.log('Stats API not available:', statsError.message);
-      }
-
-      // Load influencer list with timeout
       try {
         const influencersResponse = await fetch(`${API_BASE}/api/dashboard/crm/list`, {
           method: 'GET',

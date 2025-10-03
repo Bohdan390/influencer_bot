@@ -19,6 +19,7 @@ const instagramRouter = require('./routes/instagram');
 const emailCampaignsRouter = require('./routes/email-campaigns');
 const slackEvents = require('./routes/slack-events');
 const imagesRouter = require('./routes/images');
+const templatesRouter = require('./routes/templates');
 
 // Import services
 const { initializeSupabase, createDefaultUser } = require('./services/database');
@@ -298,6 +299,7 @@ app.use('/api/campaigns', campaignsRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/setup', setupRouter);
 app.use('/api/images', imagesRouter);
+app.use('/api/templates', templatesRouter);
 app.use('/api/instagram', instagramRouter);
 app.use('/api/email-campaigns', emailCampaignsRouter);
 app.use('/api/split-tests', require('./routes/split-tests')); // ✨ NEW: Split testing routes

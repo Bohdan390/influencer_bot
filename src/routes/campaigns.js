@@ -588,6 +588,132 @@ router.post('/discover', async (req, res) => {
   }
 });
 
+// POST /api/campaigns/discover-competitor-tags - Discover influencers who tagged competitors
+router.post('/discover-competitor-tags', async (req, res) => {
+  try {
+    const { 
+      competitor_handles, 
+      limit = 50, 
+      minFollowers = 1000, 
+      maxFollowers = 1000000, 
+      minEngagementRate = 0.0,
+      location = null 
+    } = req.body;
+    
+    if (!competitor_handles || !Array.isArray(competitor_handles) || competitor_handles.length === 0) {
+      return res.status(400).json({ 
+        error: 'Competitor handles array is required',
+        message: 'Provide an array of competitor Instagram handles (e.g., ["@competitor1", "@competitor2"])'
+      });
+    }
+    
+    // Generate discovery ID for progress tracking
+    const discoveryId = `competitor_tags_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    console.log(`🎯 Starting competitor tag discovery for: ${competitor_handles.join(', ')}`);
+    console.log(`📡 Discovery ID: ${discoveryId}`);
+    
+    // Return discovery ID immediately for real-time tracking
+    res.json({
+      success: true,
+      discoveryId,
+      message: 'Competitor tag discovery started. Use WebSocket to track progress.',
+      competitors: competitor_handles,
+      discoveryType: 'competitor_tags'
+    });
+
+    // Start discovery in background
+    setImmediate(async () => {
+      try {
+        const competitorDiscoveryService = require('../services/competitor-discovery');
+        
+        const discoveredInfluencers = await competitorDiscoveryService.discoverInfluencersByCompetitorTags(competitor_handles, {
+          limit,
+          minFollowers,
+          maxFollowers,
+          minEngagementRate,
+          discoveryId,
+          location
+        });
+
+        console.log(`📱 Competitor tag discovery completed: ${discoveredInfluencers.length} influencers found`);
+
+      } catch (error) {
+        console.error('❌ Competitor tag discovery failed:', error);
+      }
+    });
+
+  } catch (error) {
+    console.error('Competitor tag discovery error:', error);
+    res.status(500).json({ 
+      error: 'Failed to start competitor tag discovery',
+      details: error.message 
+    });
+  }
+});
+
+// POST /api/campaigns/discover-competitor-followers - Discover influencers from competitor followers
+router.post('/discover-competitor-followers', async (req, res) => {
+  try {
+    const { 
+      competitor_handles, 
+      limit = 50, 
+      minFollowers = 1000, 
+      maxFollowers = 1000000,
+      location = null 
+    } = req.body;
+    
+    if (!competitor_handles || !Array.isArray(competitor_handles) || competitor_handles.length === 0) {
+      return res.status(400).json({ 
+        error: 'Competitor handles array is required',
+        message: 'Provide an array of competitor Instagram handles (e.g., ["@competitor1", "@competitor2"])'
+      });
+    }
+    
+    // Generate discovery ID for progress tracking
+    const discoveryId = `competitor_followers_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    console.log(`👥 Starting competitor follower discovery for: ${competitor_handles.join(', ')}`);
+    console.log(`📡 Discovery ID: ${discoveryId}`);
+    
+    // Return discovery ID immediately for real-time tracking
+    res.json({
+      success: true,
+      discoveryId,
+      message: 'Competitor follower discovery started. Use WebSocket to track progress.',
+      competitors: competitor_handles,
+      discoveryType: 'competitor_followers'
+    });
+
+    // Start discovery in background
+    setImmediate(async () => {
+      try {
+        const competitorDiscoveryService = require('../services/competitor-discovery');
+        
+        const discoveredInfluencers = await competitorDiscoveryService.discoverInfluencersByCompetitorFollowers(competitor_handles, {
+          limit,
+          minFollowers,
+          maxFollowers,
+          discoveryId,
+          location
+        });
+
+        console.log(`👥 Competitor follower discovery completed: ${discoveredInfluencers.length} influencers found`);
+
+      } catch (error) {
+        console.error('❌ Competitor follower discovery failed:', error);
+      }
+    });
+
+  } catch (error) {
+    console.error('Competitor follower discovery error:', error);
+    res.status(500).json({ 
+      error: 'Failed to start competitor follower discovery',
+      details: error.message 
+    });
+  }
+});
+
 // POST /api/campaigns/send-outreach - Send outreach emails with duplicate prevention
 router.post('/send-outreach', async (req, res) => {
   try {

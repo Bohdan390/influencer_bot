@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Rocket, Users, Mail, Clock, CheckCircle, AlertCircle, Instagram, MessageSquare, Zap, Shield } from "lucide-react";
+import { Rocket, Users, Mail, Clock, CheckCircle, AlertCircle, Instagram, MessageSquare, Zap, Shield, Hash, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import DiscoveryProgressNew from "./DiscoveryProgressNew";
 import { useWebSocket, useWebSocketListener } from "../contexts/WebSocketContext";
@@ -39,6 +39,14 @@ const CampaignLauncher = () => {
   const [discoveryId, setDiscoveryId] = useState<string | null>(null);
   const [showProgress, setShowProgress] = useState(false);
   const [isDiscoveryActive, setIsDiscoveryActive] = useState(false);
+  
+  // Competitor discovery state
+  const [competitorHandles, setCompetitorHandles] = useState<string[]>([]);
+  const [competitorHandleInput, setCompetitorHandleInput] = useState('');
+  const [competitorDiscoveryType, setCompetitorDiscoveryType] = useState<'tags' | 'followers'>('tags');
+  const [isCompetitorDiscoveryActive, setIsCompetitorDiscoveryActive] = useState(false);
+  const [competitorDiscoveryProgress, setCompetitorDiscoveryProgress] = useState(0);
+  const [competitorDiscoveryStep, setCompetitorDiscoveryStep] = useState('');
   
   const { toast } = useToast();
   const { send: sendWebSocketMessage } = useWebSocket();
@@ -263,6 +271,81 @@ const CampaignLauncher = () => {
     }
   };
 
+  // Competitor discovery functions
+  const addCompetitorHandle = () => {
+    if (competitorHandleInput.trim() && !competitorHandles.includes(competitorHandleInput.trim())) {
+      setCompetitorHandles([...competitorHandles, competitorHandleInput.trim()]);
+      setCompetitorHandleInput('');
+    }
+  };
+
+  const removeCompetitorHandle = (handle: string) => {
+    setCompetitorHandles(competitorHandles.filter(h => h !== handle));
+  };
+
+  const handleCompetitorDiscovery = async () => {
+    if (competitorHandles.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please add at least one competitor handle.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCompetitorDiscoveryActive(true);
+    setCompetitorDiscoveryProgress(0);
+    setCompetitorDiscoveryStep('Starting competitor discovery...');
+
+    try {
+      const endpoint = competitorDiscoveryType === 'tags' 
+        ? '/api/campaigns/discover-competitor-tags'
+        : '/api/campaigns/discover-competitor-followers';
+
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          competitorHandles,
+          minFollowers: campaignData.minFollowers,
+          maxFollowers: campaignData.maxFollowers,
+          minEngagementRate: 1, // Default engagement rate
+          maxResults: campaignData.targetCount,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Competitor discovery response:', data);
+
+      if (data.success) {
+        setCompetitorDiscoveryStep('Discovery completed successfully!');
+        setCompetitorDiscoveryProgress(100);
+        toast({
+          title: "Success",
+          description: `Found ${data.influencers?.length || 0} influencers from competitor analysis.`,
+        });
+      } else {
+        throw new Error(data.error || 'Failed to start competitor discovery');
+      }
+    } catch (error) {
+      console.error('Error starting competitor discovery:', error);
+      toast({
+        title: "Error",
+        description: `Failed to start competitor discovery: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: "destructive",
+      });
+      setCompetitorDiscoveryStep('Discovery failed');
+    } finally {
+      setIsCompetitorDiscoveryActive(false);
+    }
+  };
+
   console.log(showProgress, discoveryId)
 
   return (
@@ -328,7 +411,20 @@ const CampaignLauncher = () => {
           <CardTitle>Discovery & Targeting</CardTitle>
           <CardDescription>Choose how to find influencers and define your targeting criteria</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent>
+          <Tabs defaultValue="hashtag" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="hashtag" className="flex items-center gap-2">
+                <Hash className="w-4 h-4" />
+                Hashtag Discovery
+              </TabsTrigger>
+              <TabsTrigger value="competitor" className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                Competitor Analysis
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="hashtag" className="space-y-6 mt-6">
           {/* Location Configuration */}
           <div className="space-y-3">
             <Label htmlFor="location" className="text-base font-semibold">Target Location</Label>
@@ -382,6 +478,126 @@ const CampaignLauncher = () => {
               </div>
             </div>
           </div>
+            </TabsContent>
+            
+            <TabsContent value="competitor" className="space-y-6 mt-6">
+              {/* Competitor Discovery Type */}
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Discovery Method</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      competitorDiscoveryType === 'tags' 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setCompetitorDiscoveryType('tags')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Hash className="w-5 h-5 text-purple-600" />
+                      <div>
+                        <h3 className="font-medium">Tag-Based Discovery</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Find users who tagged competitors in posts
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      competitorDiscoveryType === 'followers' 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setCompetitorDiscoveryType('followers')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Users className="w-5 h-5 text-purple-600" />
+                      <div>
+                        <h3 className="font-medium">Follower Analysis</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Analyze competitor followers for influencers
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Competitor Handles */}
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Competitor Handles</Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="@competitor1, @competitor2"
+                    value={competitorHandleInput}
+                    onChange={(e) => setCompetitorHandleInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addCompetitorHandle()}
+                  />
+                  <Button onClick={addCompetitorHandle} variant="outline">
+                    Add
+                  </Button>
+                </div>
+                {competitorHandles.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {competitorHandles.map((handle, index) => (
+                      <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                        {handle}
+                        <button
+                          onClick={() => removeCompetitorHandle(handle)}
+                          className="ml-1 hover:text-red-500"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Note about using existing target settings */}
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2 text-blue-800">
+                  <Users className="w-4 h-4" />
+                  <span className="text-sm font-medium">Target Settings</span>
+                </div>
+                <p className="text-sm text-blue-700 mt-1">
+                  Follower count, engagement rate, and result limits will use the settings from the "Target Settings" card below.
+                </p>
+              </div>
+
+              {/* Competitor Discovery Progress */}
+              {isCompetitorDiscoveryActive && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-sm font-medium">{competitorDiscoveryStep}</span>
+                  </div>
+                  <Progress value={competitorDiscoveryProgress} className="w-full" />
+                </div>
+              )}
+
+              {/* Start Competitor Discovery Button */}
+              <Button
+                onClick={handleCompetitorDiscovery}
+                disabled={isCompetitorDiscoveryActive || competitorHandles.length === 0}
+                className="w-full"
+                size="lg"
+              >
+                {isCompetitorDiscoveryActive ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Discovering...
+                  </>
+                ) : (
+                  <>
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Start Competitor Discovery
+                  </>
+                )}
+              </Button>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
         {/* Target Settings */}

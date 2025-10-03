@@ -10,7 +10,7 @@ export default {
 	],
 	prefix: "",
 	theme: {
-		container: {
+		maincontainer: {
 			center: true,
 			padding: '2rem',
 			screens: {

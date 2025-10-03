@@ -53,19 +53,33 @@ async function sendDM(influencer, dmType, message, subject, firstSend, message_i
         });
       }
 
+      // Prepare template data for personalization
+      const templateData = {
+        influencer_id: influencer.id,
+        message_id,
+        instagram_handle: influencer.instagram_handle,
+        dm_type: 'email',
+        manual_send: true,
+        first_send: firstSend,
+        // Template variables for personalization
+        first_name: influencer.first_name || influencer.name?.split(' ')[0] || 'there',
+        last_name: influencer.last_name || influencer.name?.split(' ').slice(1).join(' ') || '',
+        full_name: influencer.full_name || influencer.name || 'there',
+        influencer_name: influencer.full_name || influencer.name || 'there',
+        follower_count: influencer.followers || influencer.follower_count || 0,
+        engagement_rate: influencer.engagement_rate || 0,
+        bio: influencer.bio || '',
+        profile_picture: influencer.profile_picture || influencer.avatar || '',
+        email: influencer.email,
+        sender_name: 'Cosara Partnership Team'
+      };
+
       // Send email
       result = await emailService.sendEmail(
         influencer.email,
         subject,
         message.replace(/\n/g, '<br>'), // Convert line breaks to HTML
-        {
-          influencer_id: influencer.id,
-          message_id,
-          instagram_handle: influencer.instagram_handle,
-          dm_type: 'email',
-          manual_send: true,
-          first_send: firstSend
-        }
+        templateData
       );
 
     } else if (dmType === 'instagram') {

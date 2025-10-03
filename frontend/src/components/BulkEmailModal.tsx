@@ -12,8 +12,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, Mail, Users, CheckCircle, AlertCircle, Sparkles, Send } from 'lucide-react';
+import { Loader2, Mail, Users, CheckCircle, AlertCircle, Sparkles, Send, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Influencer {
   id: string | number;
@@ -25,6 +26,16 @@ interface Influencer {
   journey_stage?: string;
 }
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  html: string;
+  text?: string;
+  description?: string;
+  category: string;
+}
+
 interface BulkEmailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -33,6 +44,7 @@ interface BulkEmailModalProps {
     influencers: Influencer[];
     subject: string;
     message: string;
+    templateId?: string;
   }) => Promise<void>;
 }
 
@@ -48,6 +60,9 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({
   const [message, setMessage] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const [sendingProgress, setSendingProgress] = useState(0);
   const [sentCount, setSentCount] = useState(0);
   const [failedCount, setFailedCount] = useState(0);
@@ -68,8 +83,40 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({
       setSendingProgress(0);
       setSentCount(0);
       setFailedCount(0);
+      setSelectedTemplateId('');
+      loadTemplates();
     }
   }, [isOpen]);
+
+  const loadTemplates = async () => {
+    setIsLoadingTemplates(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/templates`);
+      if (response.ok) {
+        const data = await response.json();
+        setTemplates(data.templates || []);
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
+    } finally {
+      setIsLoadingTemplates(false);
+    }
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplateId(templateId);
+    if (templateId === 'custom') {
+      // Clear fields for custom message
+      setSubject('');
+      setMessage('');
+    } else {
+      const template = templates.find(t => t.id === templateId);
+      if (template) {
+        setSubject(template.subject);
+        setMessage(template.text || template.html.replace(/<[^>]*>/g, ''));
+      }
+    }
+  };
 
   const handleGenerateMessage = async () => {
     setIsGenerating(true);
@@ -136,7 +183,8 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({
       await onSendBulk({
         influencers: eligibleInfluencers,
         subject,
-        message
+        message,
+        templateId: selectedTemplateId && selectedTemplateId !== 'custom' ? selectedTemplateId : undefined,
       });
 
       clearInterval(progressInterval);
@@ -238,6 +286,40 @@ const BulkEmailModal: React.FC<BulkEmailModalProps> = ({
 
           {/* Email Content */}
           <div className="space-y-4">
+            {/* Template Selection */}
+            <div>
+              <Label htmlFor="template">Email Template (Optional)</Label>
+              <Select value={selectedTemplateId} onValueChange={handleTemplateSelect}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={isLoadingTemplates ? "Loading templates..." : "Select a template or write custom message"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="custom">Custom Message</SelectItem>
+                  {templates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        <span>{template.name}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {template.category}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedTemplateId && selectedTemplateId !== 'custom' && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Template selected: {templates.find(t => t.id === selectedTemplateId)?.name}
+                </p>
+              )}
+              {selectedTemplateId === 'custom' && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Custom message mode - write your own content
+                </p>
+              )}
+            </div>
+
             <div>
               <Label htmlFor="subject">Email Subject</Label>
               <Input

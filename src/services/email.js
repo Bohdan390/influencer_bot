@@ -138,16 +138,17 @@ class EmailService {
     try {
       console.log(`📧 Sending email via ${this.provider} to ${to}`);
       
-      // Personalize content
+      // Personalize content and subject
       const personalizedHtml = this.personalizeContent(htmlContent, templateData);
+      const personalizedSubject = this.personalizeContent(subject, templateData);
       
       let result;
       if (this.provider === 'brevo') {
-        result = await this.sendViaBrevo(to, subject, personalizedHtml, templateData.message_id);
+        result = await this.sendViaBrevo(to, personalizedSubject, personalizedHtml, templateData.message_id);
       } else if (this.provider === 'sendgrid') {
-        result = await this.sendViaSendGrid(to, subject, personalizedHtml);
+        result = await this.sendViaSendGrid(to, personalizedSubject, personalizedHtml);
       } else if (this.provider === 'smtp') {
-        result = await this.sendViaSMTP(to, subject, personalizedHtml);
+        result = await this.sendViaSMTP(to, personalizedSubject, personalizedHtml);
       } else {
         throw new Error(`Unknown email provider: ${this.provider}`);
       }
@@ -326,12 +327,18 @@ class EmailService {
       '{{first_name}}': data.first_name || data.influencer_name || 'there',
       '{{last_name}}': data.last_name || '',
       '{{full_name}}': data.full_name || (data.first_name && data.last_name ? `${data.first_name} ${data.last_name}` : data.influencer_name || 'there'),
+      '{{instagram_handle}}': data.instagram_handle || '',
+      '{{follower_count}}': data.follower_count ? this.formatNumber(data.follower_count) : '',
+      '{{engagement_rate}}': data.engagement_rate ? `${data.engagement_rate}%` : '',
+      '{{bio}}': data.bio || '',
+      '{{email}}': data.email || '',
       '{{tracking_number}}': data.tracking_number || '',
       '{{estimated_delivery}}': data.estimated_delivery || data.delivery_date || '',
+      '{{sender_name}}': data.sender_name || this.fromName,
       
       // Legacy format for backwards compatibility
       '{{INFLUENCER_NAME}}': data.influencer_name || data.first_name || 'there',
-      '{{INFLUENCER_HANDLE}}': data.influencer_handle || '',
+      '{{INFLUENCER_HANDLE}}': data.instagram_handle || '',
       '{{FOLLOWER_COUNT}}': data.follower_count ? this.formatNumber(data.follower_count) : '',
       '{{RECENT_POST_REFERENCE}}': data.recent_post || 'your recent content',
       '{{SENDER_NAME}}': data.sender_name || this.fromName,

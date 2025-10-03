@@ -31,19 +31,6 @@ router.get('/activity', (req, res) => {
   res.json({ message: 'Activity feed - TODO: Implement activity tracking' });
 });
 
-// CRM Dashboard routes
-router.get('/crm', async (req, res) => {
-  try {
-    const { influencers } = require('../services/database');
-    const stats = await influencers.getCRMDashboard();
-    
-    res.json(stats);
-  } catch (error) {
-    console.error('CRM dashboard error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
 router.get('/crm/list', async (req, res) => {
   try {
     const { influencers } = require('../services/database');

@@ -1024,6 +1024,299 @@ partnership@${brandName.toLowerCase()}.com`,
       personalization_notes: `Bulk email template for ${influencers.length} influencers`
     };
   }
+
+  /**
+   * Generate email template using AI
+   */
+  async generateEmailTemplate(options) {
+    try {
+      const {
+        templateType = 'outreach',
+        brandName = 'Cosara',
+        productDescription = 'IPL Hair Laser Device',
+        targetAudience = 'beauty influencers',
+        tone = 'professional',
+        callToAction = 'brand ambassador opportunity',
+        additionalRequirements = ''
+      } = options;
+
+      console.log(`🤖 Generating ${templateType} template for ${brandName}`);
+
+      const prompt = this.buildTemplateGenerationPrompt({
+        templateType,
+        brandName,
+        productDescription,
+        targetAudience,
+        tone,
+        callToAction,
+        additionalRequirements
+      });
+
+      const aiResponse = await this.callAI(prompt);
+      const templateData = this.parseTemplateResponse(aiResponse, options);
+
+      console.log(`✅ Generated ${templateType} template successfully`);
+      return templateData;
+
+    } catch (error) {
+      console.error('❌ Template generation failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Build prompt for template generation
+   */
+  buildTemplateGenerationPrompt(options) {
+    const {
+      templateType,
+      brandName,
+      productDescription,
+      targetAudience,
+      tone,
+      callToAction,
+      additionalRequirements
+    } = options;
+
+    return `You are an expert email marketing copywriter specializing in influencer outreach. Generate a professional email template with the following specifications:
+
+**Template Type:** ${templateType}
+**Brand Name:** ${brandName}
+**Product Description:** ${productDescription}
+**Target Audience:** ${targetAudience}
+**Tone:** ${tone}
+**Call to Action:** ${callToAction}
+${additionalRequirements ? `**Additional Requirements:** ${additionalRequirements}` : ''}
+
+**Requirements:**
+1. Create both HTML and plain text versions
+2. Use professional email structure with proper HTML formatting
+3. Use INLINE STYLES ONLY - NO CSS classes or external stylesheets
+4. Include personalization variables like {{first_name}}, {{instagram_handle}}
+5. Make it engaging but not overly salesy
+6. Include clear call-to-action
+7. Keep it concise but informative
+8. Use appropriate subject line
+9. Include brand signature
+10. Ensure all styling is inline to prevent CSS conflicts
+
+**HTML Styling Guidelines:**
+- Use inline styles for ALL elements (e.g., style="color: #000000; font-size: 16px;")
+- NO CSS classes (class="...") or external stylesheets
+- Use table-based layout for email compatibility
+- Include proper inline styling for fonts, colors, spacing, borders
+- Example: <p style="margin: 0 0 16px 0; line-height: 1.5; color: #000000; font-family: Arial, sans-serif;">
+
+**Output Format:**
+Return a JSON object with:
+{
+  "name": "Template Name",
+  "subject": "Email Subject Line",
+  "html": "HTML version with inline styles only",
+  "text": "Plain text version of the email",
+  "description": "Brief description of the template",
+  "category": "${templateType}",
+  "variables": ["list", "of", "personalization", "variables"]
+}
+
+Generate a compelling, professional email template that will resonate with ${targetAudience} and effectively communicate the ${callToAction} for ${brandName}.`;
+  }
+
+  /**
+   * Parse AI response for template generation
+   */
+  parseTemplateResponse(aiResponse, options) {
+    try {
+      // Try to extract JSON from the response
+      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const templateData = JSON.parse(jsonMatch[0]);
+        
+        // Ensure required fields are present and clean HTML
+        return {
+          id: `ai_generated_${Date.now()}`,
+          name: templateData.name || `${options.templateType} Template for ${options.brandName}`,
+          subject: templateData.subject || `Partnership Opportunity with ${options.brandName}`,
+          html: this.cleanHTMLForInlineStyles(templateData.html) || this.generateFallbackHTML(options),
+          text: templateData.text || this.generateFallbackText(options),
+          description: templateData.description || `AI-generated ${options.templateType} template for ${options.brandName}`,
+          category: templateData.category || options.templateType,
+          variables: templateData.variables || ['{{first_name}}', '{{instagram_handle}}', '{{follower_count}}'],
+          is_active: true,
+        };
+      } else {
+        // Fallback if JSON parsing fails
+        return this.generateFallbackTemplate(options);
+      }
+    } catch (error) {
+      console.error('❌ Failed to parse AI template response:', error);
+      return this.generateFallbackTemplate(options);
+    }
+  }
+
+  /**
+   * Clean HTML to ensure inline styles only
+   */
+  cleanHTMLForInlineStyles(html) {
+    if (!html) return html;
+    
+    // Remove any CSS classes and convert common classes to inline styles
+    let cleanedHTML = html
+      // Remove class attributes
+      .replace(/class\s*=\s*["'][^"']*["']/gi, '')
+      // Convert common Tailwind/CSS classes to inline styles
+      .replace(/<p\s+([^>]*?)>/gi, (match, attrs) => {
+        if (!attrs.includes('style=')) {
+          return `<p style="margin: 0 0 16px 0; line-height: 1.5; color: #000000; font-family: Arial, sans-serif;" ${attrs}>`;
+        }
+        return match;
+      })
+      .replace(/<h([1-6])\s+([^>]*?)>/gi, (match, level, attrs) => {
+        if (!attrs.includes('style=')) {
+          const fontSize = level === '1' ? '24px' : level === '2' ? '20px' : level === '3' ? '18px' : '16px';
+          return `<h${level} style="margin: 0 0 16px 0; font-size: ${fontSize}; font-weight: bold; color: #000000; font-family: Arial, sans-serif;" ${attrs}>`;
+        }
+        return match;
+      })
+      .replace(/<div\s+([^>]*?)>/gi, (match, attrs) => {
+        if (!attrs.includes('style=')) {
+          return `<div style="margin: 0; padding: 0;" ${attrs}>`;
+        }
+        return match;
+      })
+      .replace(/<table\s+([^>]*?)>/gi, (match, attrs) => {
+        if (!attrs.includes('style=')) {
+          return `<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto;" ${attrs}>`;
+        }
+        return match;
+      })
+      .replace(/<td\s+([^>]*?)>/gi, (match, attrs) => {
+        if (!attrs.includes('style=')) {
+          return `<td style="padding: 0;" ${attrs}>`;
+        }
+        return match;
+      })
+      .replace(/<tr\s+([^>]*?)>/gi, (match, attrs) => {
+        if (!attrs.includes('style=')) {
+          return `<tr ${attrs}>`;
+        }
+        return match;
+      })
+      .replace(/<strong\s+([^>]*?)>/gi, (match, attrs) => {
+        if (!attrs.includes('style=')) {
+          return `<strong style="font-weight: bold;" ${attrs}>`;
+        }
+        return match;
+      })
+      .replace(/<a\s+([^>]*?)>/gi, (match, attrs) => {
+        if (!attrs.includes('style=')) {
+          return `<a style="color: #000000; text-decoration: underline;" ${attrs}>`;
+        }
+        return match;
+      });
+    
+    return cleanedHTML;
+  }
+
+  /**
+   * Generate fallback template if AI fails
+   */
+  generateFallbackTemplate(options) {
+    const { brandName, productDescription, templateType, callToAction } = options;
+    
+    return {
+      id: `ai_generated_${Date.now()}`,
+      name: `${templateType} Template for ${brandName}`,
+      subject: `Partnership Opportunity with ${brandName}`,
+      html: this.generateFallbackHTML(options),
+      text: this.generateFallbackText(options),
+      description: `AI-generated ${templateType} template for ${brandName}`,
+      category: templateType,
+      variables: ['{{first_name}}', '{{instagram_handle}}', '{{follower_count}}'],
+      is_active: true,
+    };
+  }
+
+  /**
+   * Generate fallback HTML template
+   */
+  generateFallbackHTML(options) {
+    const { brandName, productDescription, callToAction } = options;
+    
+    return `<!DOCTYPE html>
+<html>
+  <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 16px; color: #000000; background-color: #ffffff;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+      <tr><td>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">Hi {{first_name}},</p>
+        
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">
+          I'm reaching out on behalf of <strong>${brandName}</strong> — ${productDescription}. We help people achieve their goals with our innovative technology.
+        </p>
+        
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">
+          I came across your profile @{{instagram_handle}} and was impressed by your content and engaged community. Your aesthetic aligns perfectly with our brand values.
+        </p>
+        
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">
+          <strong>Here's what I'd love to offer you:</strong>
+        </p>
+        
+        <p style="margin: 0 0 8px 0; line-height: 1.5;">
+          🎯 <strong>${callToAction}:</strong> We're offering a free product in exchange for authentic content about your experience.
+        </p>
+        
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">
+          This is your chance to be part of our community and showcase innovative products to your audience.
+        </p>
+        
+        <p style="margin: 0 0 24px 0; line-height: 1.5;">
+          Are you interested in this opportunity? I'd love to share more details!
+        </p>
+        
+        <p style="margin: 0 0 8px 0; line-height: 1.5;">Best regards,</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">The ${brandName} Partnership Team</p>
+        
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 16px;">
+          <tr><td>
+            <p style="margin: 0; line-height: 1.5;">
+              <strong>${brandName}</strong><br>
+              <a href="https://${brandName.toLowerCase()}.com" target="_blank" style="color: #000000; text-decoration: underline;">${brandName.toLowerCase()}.com</a>
+            </p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>`;
+  }
+
+  /**
+   * Generate fallback text template
+   */
+  generateFallbackText(options) {
+    const { brandName, productDescription, callToAction } = options;
+    
+    return `Hi {{first_name}},
+
+I'm reaching out on behalf of ${brandName} — ${productDescription}. We help people achieve their goals with our innovative technology.
+
+I came across your profile @{{instagram_handle}} and was impressed by your content and engaged community. Your aesthetic aligns perfectly with our brand values.
+
+Here's what I'd love to offer you:
+
+🎯 ${callToAction}: We're offering a free product in exchange for authentic content about your experience.
+
+This is your chance to be part of our community and showcase innovative products to your audience.
+
+Are you interested in this opportunity? I'd love to share more details!
+
+Best regards,
+The ${brandName} Partnership Team
+
+${brandName}
+${brandName.toLowerCase()}.com`;
+  }
 }
 
 module.exports = new AIResponseHandler(); 

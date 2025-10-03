@@ -164,4 +164,45 @@ router.post('/generate-bulk-message', async (req, res) => {
   }
 });
 
+// POST /api/ai/generate-template - Generate email template using AI
+router.post('/generate-template', async (req, res) => {
+  try {
+    const { 
+      templateType = 'outreach',
+      brandName = 'Cosara',
+      productDescription = 'IPL Hair Laser Device',
+      targetAudience = 'beauty influencers',
+      tone = 'professional',
+      callToAction = 'brand ambassador opportunity',
+      additionalRequirements = ''
+    } = req.body;
+    
+    console.log(`🤖 Generating ${templateType} template for ${brandName}`);
+    
+    // Generate template using AI
+    const templateData = await aiResponseHandler.generateEmailTemplate({
+      templateType,
+      brandName,
+      productDescription,
+      targetAudience,
+      tone,
+      callToAction,
+      additionalRequirements
+    });
+    
+    res.json({
+      success: true,
+      template: templateData
+    });
+    
+  } catch (error) {
+    console.error('❌ AI template generation failed:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate template',
+      details: error.message
+    });
+  }
+});
+
 module.exports = router;

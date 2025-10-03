@@ -12,10 +12,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Mail, Instagram, Send, Sparkles, User } from 'lucide-react';
+import { Loader2, Mail, Instagram, Send, Sparkles, User, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getProxiedImageUrl } from '@/utils/imageProxy';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Influencer {
   id: string | number;
@@ -29,6 +30,16 @@ interface Influencer {
   profile_picture?: string;
 }
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  html: string;
+  text?: string;
+  description?: string;
+  category: string;
+}
+
 interface DMModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -39,6 +50,7 @@ interface DMModalProps {
     message: string;
     firstSend: boolean;
     subject?: string;
+    templateId?: string;
   }) => Promise<void>;
 }
 
@@ -55,6 +67,9 @@ const DMModal: React.FC<DMModalProps> = ({
   const [subject, setSubject] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const { toast } = useToast();
 
   // Reset form when modal opens/closes
@@ -63,8 +78,84 @@ const DMModal: React.FC<DMModalProps> = ({
       setMessage('');
       setSubject('');
       setDmType(influencer.email ? 'email' : 'instagram');
+      setSelectedTemplateId('');
+      if (influencer.email) {
+        loadTemplates();
+      }
     }
   }, [isOpen, influencer]);
+
+  const loadTemplates = async () => {
+    setIsLoadingTemplates(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/templates`);
+      if (response.ok) {
+        const data = await response.json();
+        setTemplates(data.templates || []);
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
+    } finally {
+      setIsLoadingTemplates(false);
+    }
+  };
+
+  const substituteVariables = (content: string, influencer: Influencer) => {
+    if (!influencer) return content;
+    
+    // Prepare influencer data for substitution
+    const first_name = influencer.name?.split(' ')[0] || influencer.instagram_handle?.replace('@', '') || 'there';
+    const last_name = influencer.name?.split(' ').slice(1).join(' ') || '';
+    const full_name = influencer.full_name || influencer.name || influencer.instagram_handle || 'there';
+    const instagram_handle = influencer.instagram_handle || '';
+    const follower_count = influencer.follower_count ? influencer.follower_count.toLocaleString() : '';
+    const email = influencer.email || '';
+    
+    // Replace common placeholders
+    const replacements = {
+      '{{first_name}}': first_name,
+      '{{last_name}}': last_name,
+      '{{full_name}}': full_name,
+      '{{influencer_name}}': full_name,
+      '{{instagram_handle}}': instagram_handle,
+      '{{follower_count}}': follower_count,
+      '{{email}}': email,
+      '{{sender_name}}': 'Cosara Partnership Team',
+      
+      // Legacy format for backwards compatibility
+      '{{INFLUENCER_NAME}}': full_name,
+      '{{INFLUENCER_HANDLE}}': instagram_handle,
+      '{{FOLLOWER_COUNT}}': follower_count,
+      '{{SENDER_NAME}}': 'Cosara Partnership Team'
+    };
+
+    let substitutedContent = content;
+    Object.entries(replacements).forEach(([placeholder, value]) => {
+      substitutedContent = substitutedContent.replace(new RegExp(placeholder, 'g'), value);
+    });
+
+    return substitutedContent;
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplateId(templateId);
+    if (templateId === 'custom') {
+      // Clear fields for custom message
+      setSubject('');
+      setMessage('');
+    } else {
+      const template = templates.find(t => t.id === templateId);
+      if (template && influencer) {
+        // Substitute variables in subject and message
+        const substitutedSubject = substituteVariables(template.subject, influencer);
+        const rawMessage = template.text || template.html.replace(/<[^>]*>/g, '');
+        const substitutedMessage = substituteVariables(rawMessage, influencer);
+        
+        setSubject(substitutedSubject);
+        setMessage(substitutedMessage);
+      }
+    }
+  };
 
   const handleGenerateMessage = async () => {
     if (!influencer) return;
@@ -136,6 +227,7 @@ const DMModal: React.FC<DMModalProps> = ({
         message: message.trim(),
         firstSend: true,
         subject: dmType === 'email' ? subject.trim() : undefined,
+        templateId: selectedTemplateId && selectedTemplateId !== 'custom' ? selectedTemplateId : undefined,
       });
 
       toast({
@@ -257,6 +349,42 @@ const DMModal: React.FC<DMModalProps> = ({
               </div>
             </RadioGroup>
           </div>
+
+          {/* Email Template Selection (only for email) */}
+          {dmType === 'email' && (
+            <div className="space-y-2">
+              <Label htmlFor="template">Email Template (Optional)</Label>
+              <Select value={selectedTemplateId} onValueChange={handleTemplateSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={isLoadingTemplates ? "Loading templates..." : "Select a template or write custom message"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="custom">Custom Message</SelectItem>
+                  {templates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        <span>{template.name}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {template.category}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedTemplateId && selectedTemplateId !== 'custom' && (
+                <p className="text-xs text-gray-500">
+                  Template selected: {templates.find(t => t.id === selectedTemplateId)?.name}
+                </p>
+              )}
+              {selectedTemplateId === 'custom' && (
+                <p className="text-xs text-gray-500">
+                  Custom message mode - write your own content
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Email Subject (only for email) */}
           {dmType === 'email' && (
